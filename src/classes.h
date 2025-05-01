@@ -29,6 +29,15 @@ public:
 	Entity() {}
 	Entity(Rectangle rec, Vector2 speed, Color color) : rec(rec), speed(speed), color(color) {}
 
+	Rectangle GetRec() const { return rec; }
+	void SetRec(Rectangle r) { rec = r; }
+	void SetPos(float x, float y) { rec.x = x; rec.y = y; }
+
+	void SetX(float x) { rec.x = x; }
+	void SetY(float y) { rec.y = y; }
+	float GetX() const { return rec.x; }
+	float GetY() const { return rec.y; }
+
 	virtual ~Entity() = default;
 };
 
@@ -37,6 +46,7 @@ class Player : public Entity {
 public:
 	Player() {}
 	Player(Rectangle rec, Vector2 speed, Color color) : Entity(rec, speed, color) {}
+
 };
 
 // --- Enemy ---

@@ -115,6 +115,11 @@ void InitGame() {
 	//Enemy enemy[10] /*= { 0 }*/;
 	//EnemyShot e_shoot[50] /*= { 0 }*/;
 
+// Player
+	Player player;
+	player.SetX(420);
+	player.SetY(900);
+
 }
 
 void UpdateGame() {
