@@ -10,9 +10,37 @@ by Jeffery Myers is marked with CC0 1.0. To view a copy of this license, visit h
 #include <iostream>
 #include "raylib.h"
 #include "resource_dir.h"	// utility header for SearchAndSetResourceDir
+#include <vector>
 using namespace std;
 
 #include "classes.h"
+#include "resources.h"
+
+// global variables
+bool gameOver;
+bool pause;
+bool victory;
+bool main_menu;
+bool credits;
+
+int score;
+int highscore;
+int shootRate;
+int shootRate2;
+int activeEnemies;
+int enemieskill;
+int currentMusic;
+int blink;
+
+const char* main_menu_text_start;
+
+// functions
+void LoadGame();
+void InitGame();
+void UpdateGame();
+//void DrawGame();
+void UnloadGame();
+void UpdateDrawFrame();
 
 
 int main () {
@@ -20,7 +48,12 @@ int main () {
 	SetConfigFlags(FLAG_VSYNC_HINT | FLAG_WINDOW_HIGHDPI);
 
 	// Create the window and OpenGL context
-	InitWindow(1280, 800, "Hello Raylib");
+	InitWindow(1280, 800, "Galaga88");
+
+	InitAudioDevice();
+	LoadGame();
+	InitGame();
+	SetTargetFPS(60);
 
 	// Utility function from resource_dir.h to find the resources folder and set it as the current working directory so we can load from it
 	SearchAndSetResourceDir("resources");
@@ -33,6 +66,8 @@ int main () {
 	{
 		// drawing
 		BeginDrawing();
+
+		UpdateDrawFrame();
 
 		// Setup the back buffer for drawing (clear color and depth buffers)
 		ClearBackground(BLACK);
@@ -54,4 +89,52 @@ int main () {
 	// destroy the window and cleanup the OpenGL context
 	CloseWindow();
 	return 0;
+}
+
+void InitGame() {
+
+	// global variables
+	bool gameOver = false;
+	bool pause = false;
+	bool victory = false;
+	bool main_menu = true;
+	bool credits = false;
+
+	int score = 0;
+	int shootRate = 0;
+	int shootRate2 = 0;
+	int activeEnemies = 0;
+	int enemieskill = 0;
+	int currentMusic = 0;
+	int blink = 0;
+
+	const char* main_menu_text_start = "TO START PRESS < ENTER >!";
+
+	//Player player /*= { 0 }*/;
+	//Shot shot[50] /*= { 0 }*/;
+	//Enemy enemy[10] /*= { 0 }*/;
+	//EnemyShot e_shoot[50] /*= { 0 }*/;
+
+}
+
+void UpdateGame() {
+	if (main_menu == true) {
+
+		UpdateMusicStream(main_menu_music);
+
+		blink++;
+		if (blink >= 90) {
+			blink = 0;
+		}
+
+		if (IsKeyPressed(KEY_ENTER)) {
+			main_menu = false;
+			credits = true;
+		}
+	}
+}
+
+void UpdateDrawFrame() {
+	UpdateGame();
+	//DrawGame();
 }

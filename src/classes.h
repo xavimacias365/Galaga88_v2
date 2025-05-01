@@ -2,40 +2,114 @@
 #define CLASSES_H
 #pragma once
 
-class Game {};
+#include "raylib.h"
 
-class Scene {};
+// --- Base Game Class ---
+class Game {
+	// TO DO: Add game loop control and scene management.
+};
+
+// --- Scene ---
+class Scene {
+	// TO DO: Manage TileMap, Player, Enemies, etc.
+};
 
 //class TileMap {};
 
-class EnemyManager {};
 
+
+// --- Entity Base Class ---
 class Entity {
 protected:
 	Rectangle rec;
 	Vector2 speed;
 	Color color;
+
+public:
+	Entity() {}
+	Entity(Rectangle rec, Vector2 speed, Color color) : rec(rec), speed(speed), color(color) {}
+
+	virtual ~Entity() = default;
 };
 
-class Player : public Entity {};
+// --- Player ---
+class Player : public Entity {
+public:
+	Player() {}
+	Player(Rectangle rec, Vector2 speed, Color color) : Entity(rec, speed, color) {}
+};
 
+// --- Enemy ---
 class Enemy : public Entity {
 private:
+	bool active = false;
+	int move = 0;
+	int cnt = 0;
+	int frameCounter = 0;
+	int currentFrame = 0;
 
+public:
+	Enemy() {}
+	Enemy(Rectangle rec, Vector2 speed, Color color, bool active, int move, int cnt, int frameCounter, int currentFrame) : Entity(rec, speed, color), active(active), move(move), cnt(cnt), frameCounter(frameCounter), currentFrame(currentFrame) {}
 };
 
-class Object : public Entity {};
+// --- Enemy Manager ---
+class EnemyManager {
+	// TO DO: Spawn and Manage all enemies.
+};
 
-class ShotManager {};
+// --- Object (non-enemy, non-player game elements) ---
+class Object : public Entity {
+public:
+	Object() {}
+	Object(Rectangle rec, Vector2 speed, Color color) : Entity(rec, speed, color) {}
+};
 
-class Shot : public Entity {};
+// --- Shot Base Class ---
+class Shot : public Entity {
+protected:
+	bool active = false;
 
-class RenderComponent {};
+public:
+	Shot() {}
+	Shot(Rectangle rec, Vector2 speed, Color color, bool active) : Entity(rec, speed, color), active(active) {}
+};
 
-class Sprite : public RenderComponent {};
+// --- Enemy Shot ---
+class EnemyShot : public Shot {
+public:
+	EnemyShot() {}
+	EnemyShot(Rectangle rec, Vector2 speed, Color color, bool active) : Shot(rec, speed, color, active) {}
+};
 
-class StaticImage : public RenderComponent {};
+// --- Player Shot ---
+class PlayerShot : public Shot {
+public:
+	PlayerShot() {}
+	PlayerShot(Rectangle rec, Vector2 speed, Color color, bool active) : Shot(rec, speed, color, active) {}
+};
 
-class ResourceManager {};
+// --- Shot Manager ---
+class ShotManager {
+	// TO DO: Manage Active Shots.
+};
+
+
+// --- Render System ---
+class RenderComponent {
+	// TODO: Base class for sprite/static rendering
+};
+
+class Sprite : public RenderComponent {
+	// TODO: Sprite animations
+};
+
+class StaticImage : public RenderComponent {
+	// TODO: Still image rendering
+};
+
+class ResourceManager {
+	// TODO: Load and provide access to shared resources
+};
 
 #endif // CLASSES_H
