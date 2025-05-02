@@ -19,6 +19,7 @@ using namespace std;
 // Defines
 #define screenWidth 840
 #define screenHeight 1080
+#define fontSize 37
 
 // global variables
 bool gameOver;
@@ -138,9 +139,6 @@ void DrawGame() {
 	// Setup the back buffer for drawing (clear color and depth buffers)
 	ClearBackground(BLACK);
 
-	float scaleX = (float) screenWidth / main_menu_background.width;
-	float scaleY = (float) screenHeight / main_menu_background.height;
-
 	// Load a texture from the resources directory
 //	Texture wabbit = LoadTexture("wabbit_alpha.png");
 
@@ -151,18 +149,22 @@ void DrawGame() {
 //	DrawTexture(wabbit, 400, 200, WHITE);
 
 // Draw Main Menu
+ 	// CENTER IMG FORMULA -> (screenWidth - myImage.width) / 2
+	// CENTER TEXT FORMULA -> (screenWidth - MeasureText("TEXT", fontSize)) / 2		FONT SIZE = 37
+	// CORRECT IMG SCALE -> (screenWidth - myImage.width * fminf((desiredWidth / myImage.width), (desiredHeight / myImage.height)) / 2.0f)
+
 	if (main_menu == true) {
-		DrawTextureEx(main_menu_background, { 0, 0 }, 0.0f, (scaleX, scaleY), WHITE);
-		DrawTextureEx(main_menu_logo, { screenWidth / 10, screenHeight / 10 }, 0.0f, (scaleX / 1.425, scaleY / 1.425), WHITE);
-		DrawText("TO START PRESS [ENTER]!", (screenWidth / 2 - MeasureText("TO START PRESS [ENTER]!", 20) / 2) + 15, screenHeight / 2 - 50, 20, GREEN);
-		if (blink >= 0 && blink <= 40) { DrawText("INSERT  COIN", screenWidth / 2 - 120, screenHeight / 2, 30, GREEN); }
-		DrawText("© 1981 1987 NAMCO", 270, 806, 37, WHITE);
-		DrawText("ALL RIGHTS RESERVED", 200, 867, 37, WHITE); // (X) 150
-		DrawTextureEx(main_menu_namco, { 277, 960 }, 0.0f, (main_menu_namco.width / 32, main_menu_namco.height / 32), WHITE);
+		DrawTextureEx(main_menu_background, { 0, 0 }, 0.0f, ((float)screenWidth / main_menu_background.width, (float)screenHeight / main_menu_background.height), WHITE);
+		DrawTextureEx(main_menu_logo, { (screenWidth - (main_menu_logo.width * fminf((800.0f / main_menu_logo.width), (400.0f / main_menu_logo.height)))) / 2.0f, ((screenHeight / 4.0f) - (main_menu_logo.height - fminf((800.0f / main_menu_logo.width), (400.0f / main_menu_logo.height)))) }, 0.0f, fminf((800.0f / main_menu_logo.width), (400.0f / main_menu_logo.height)), WHITE);
+		DrawText("TO START PRESS [ENTER]!", (screenWidth - MeasureText("TO START PRESS [ENTER]!", fontSize)) / 2, (screenHeight - (screenHeight / 3)), fontSize, GREEN);
+		if (blink >= 0 && blink <= 40) { DrawText("INSERT COIN", (screenWidth - MeasureText("INSERT COIN", fontSize)) / 2, (screenHeight - ((screenHeight / 3) + 50)), fontSize, GREEN); }
+		DrawText("© 1981 1987 NAMCO", (screenWidth - MeasureText("© 1981 1987 NAMCO", fontSize)) / 2, 806, fontSize, WHITE);
+		DrawText("ALL RIGHTS RESERVED", (screenWidth - MeasureText("ALL RIGHTS RESERVED", fontSize)) / 2, 867, fontSize, WHITE); // (X) 150
+		DrawTextureEx(main_menu_namco, { 290, 959 }, 0.0f, (main_menu_namco.width / 32, main_menu_namco.height / 32), WHITE);
 	}
 	else if (credits == true) {
-		DrawTextureEx(credits_screen, { 0, 0 }, 0.0f, (scaleX, scaleY), WHITE);
-		DrawText("PRESS [ENTER] TO CONTINUE!", (screenWidth / 2 - MeasureText("PRESS [ENTER] TO CONTINUE!", 20) / 2) + 15, screenHeight / 4 - 50, 20, GREEN);
+		DrawTextureEx(credits_screen, { 0, 0 }, 0.0f, ((float)screenWidth / credits_screen.width, (float)screenHeight / credits_screen.height), WHITE);
+		DrawText("PRESS [ENTER] TO CONTINUE!", (screenWidth - MeasureText("PRESS [ENTER] TO CONTINUE", fontSize)) / 2, (screenHeight / 4) - 50, fontSize, GREEN);
 	}
 
 	// end the frame and get ready for the next one  (display frame, poll input, etc...)
