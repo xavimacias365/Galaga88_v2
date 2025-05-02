@@ -12,6 +12,8 @@ extern Texture2D main_menu_enemy;
 
 extern Texture2D credits_screen;
 
+extern Texture2D launch_background;
+
 extern Texture2D level1_background;
 extern Texture2D player;
 extern Texture2D shot;

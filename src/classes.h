@@ -37,6 +37,9 @@ public:
 	void SetY(float y) { rec.y = y; } 
 	float GetX() const { return rec.x; }
 	float GetY() const { return rec.y; }
+	Vector2 GetSpeed() const { return speed; }
+	void SetSpeed(Vector2 s) { speed = s; }
+	Color getColor() const { return color; }
 
 	virtual ~Entity() = default;
 };
@@ -51,7 +54,7 @@ public:
 
 // --- Enemy ---
 class Enemy : public Entity {
-private:
+protected:
 	bool active = false;
 	int move = 0;
 	int cnt = 0;
@@ -61,6 +64,12 @@ private:
 public:
 	Enemy() {}
 	Enemy(Rectangle rec, Vector2 speed, Color color, bool active, int move, int cnt, int frameCounter, int currentFrame) : Entity(rec, speed, color), active(active), move(move), cnt(cnt), frameCounter(frameCounter), currentFrame(currentFrame) {}
+};
+
+class MainMenuEnemy : public Enemy {
+public:
+	MainMenuEnemy() {}
+	MainMenuEnemy(Rectangle rec, Vector2 speed, Color color, bool active, int move, int cnt, int frameCounter, int currentFrame) : Enemy(rec, speed, color, active, move, cnt, frameCounter, currentFrame) {}
 };
 
 // --- Enemy Manager ---

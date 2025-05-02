@@ -39,23 +39,27 @@ int enemieskill;
 int currentMusic;
 int blink;
 
+MainMenuEnemy enemy;
+
 const char* main_menu_text_start;
 
 // functions
 void LoadGame();
 void InitGame();
 void UpdateGame();
-//void DrawGame();
+void DrawGame();
 void UnloadGame();
 void UpdateDrawFrame();
+
+void MainMenu();
 
 
 int main () {
 	// Tell the window to use vsync and work on high DPI displays
-	SetConfigFlags(FLAG_VSYNC_HINT | FLAG_WINDOW_HIGHDPI);
+//	SetConfigFlags(FLAG_VSYNC_HINT | FLAG_WINDOW_HIGHDPI);
 
 	// Create the window and OpenGL context
-	InitWindow(screenWidth, screenHeight, "Galaga88");
+	InitWindow(screenWidth, screenHeight, "Galaga88 - Repeaters Studio");
 
 	InitAudioDevice();
 	LoadGame();
@@ -65,7 +69,7 @@ int main () {
 	// Utility function from resource_dir.h to find the resources folder and set it as the current working directory so we can load from it
 	SearchAndSetResourceDir("resources");
 
-	Texture wabbit = LoadTexture("wabbit_alpha.png");
+//	Texture wabbit = LoadTexture("wabbit_alpha.png");
 
 	// game loop
 	while (!WindowShouldClose())		// run the loop untill the user presses ESCAPE or presses the Close button on the window
@@ -75,7 +79,7 @@ int main () {
 
 	// cleanup
 	// unload our texture so it can be cleaned up
-	UnloadTexture(wabbit);
+//	UnloadTexture(wabbit);
 
 	// destroy the window and cleanup the OpenGL context
 	CloseWindow();
@@ -103,6 +107,8 @@ void InitGame() {
 
 	const char* main_menu_text_start = "TO START PRESS < ENTER >!";
 
+	enemy = MainMenuEnemy({ 0, 555, 64, 64 }, { 5, 0 }, WHITE, true, 0, 0, 0, 0);
+
 	//Player player /*= { 0 }*/;
 	//Shot shot[50] /*= { 0 }*/;
 	//Enemy enemy[10] /*= { 0 }*/;
@@ -117,18 +123,17 @@ void InitGame() {
 
 void UpdateGame() {
 	if (main_menu == true) {
-
-		UpdateMusicStream(main_menu_music);
-
-		blink++;
-		if (blink >= 90) {
-			blink = 0;
-		}
-
+		MainMenu();
+	}
+	else if (credits == true) {
 		if (IsKeyPressed(KEY_ENTER)) {
-			main_menu = false;
-			credits = true;
+			PlaySound(enemy_killed);
+			credits = false;
+			launchSequence = true;
 		}
+	}
+	else if (launchSequence == true) {
+
 	}
 }
 
@@ -160,11 +165,16 @@ void DrawGame() {
 		if (blink >= 0 && blink <= 40) { DrawText("INSERT COIN", (screenWidth - MeasureText("INSERT COIN", fontSize)) / 2, (screenHeight - ((screenHeight / 3) + 50)), fontSize, GREEN); }
 		DrawText("© 1981 1987 NAMCO", (screenWidth - MeasureText("© 1981 1987 NAMCO", fontSize)) / 2, 806, fontSize, WHITE);
 		DrawText("ALL RIGHTS RESERVED", (screenWidth - MeasureText("ALL RIGHTS RESERVED", fontSize)) / 2, 867, fontSize, WHITE); // (X) 150
-		DrawTextureEx(main_menu_namco, { 290, 959 }, 0.0f, (main_menu_namco.width / 32, main_menu_namco.height / 32), WHITE);
+		DrawTextureEx(main_menu_namco, { ((screenWidth - main_menu_namco.width) / 2.0f), screenHeight - (screenHeight / 10) }, 0.0f, (main_menu_namco.width / 32, main_menu_namco.height / 32), WHITE);
+
+		DrawTextureEx(main_menu_enemy, { enemy.GetX(), enemy.GetY() }, 0.0f, (float)screenWidth / (float) main_menu_background.width, WHITE);
 	}
 	else if (credits == true) {
 		DrawTextureEx(credits_screen, { 0, 0 }, 0.0f, ((float)screenWidth / credits_screen.width, (float)screenHeight / credits_screen.height), WHITE);
 		DrawText("PRESS [ENTER] TO CONTINUE!", (screenWidth - MeasureText("PRESS [ENTER] TO CONTINUE", fontSize)) / 2, (screenHeight / 4) - 50, fontSize, GREEN);
+	}
+	else if (launchSequence == true) {
+		DrawTextureEx(launch_background, { 0,0 }, 0.0f, ((float)screenWidth / credits_screen.width, (float)screenHeight / credits_screen.height), WHITE);
 	}
 
 	// end the frame and get ready for the next one  (display frame, poll input, etc...)
@@ -174,4 +184,27 @@ void DrawGame() {
 void UpdateDrawFrame() {
 	UpdateGame();
 	DrawGame();
+}
+
+void MainMenu() {
+
+	UpdateMusicStream(main_menu_music);
+
+// Main Menu Enemy movement
+	if (enemy.GetX() < screenWidth + 50) {
+		enemy.SetX(enemy.GetX() + enemy.GetSpeed().x);
+	}
+
+// Text blink
+	blink++;
+	if (blink >= 90) {
+		blink = 0;
+	}
+
+// Change State
+	if (IsKeyPressed(KEY_ENTER)) {
+		PlaySound(enemy_killed);
+		main_menu = false;
+		credits = true;
+	}
 }

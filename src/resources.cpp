@@ -9,6 +9,8 @@ Texture2D main_menu_enemy;
 
 Texture2D credits_screen;
 
+Texture2D launch_background;
+
 Texture2D level1_background;
 Texture2D player;
 Texture2D shot;
@@ -48,6 +50,8 @@ void LoadGame() {
 	main_menu_enemy = LoadTexture("resources/Textures/UI/enemy_title_screen.png");
 
 	credits_screen = LoadTexture("resources/Textures/UI/credits.png");
+
+	launch_background = LoadTexture("resources/Textures/level-background/launch.png");
 
 	level1_background = LoadTexture("resources/Textures/level-background/stage1.png");
 	player = LoadTexture("resources/Textures/entities/player/fighter.png");
@@ -90,6 +94,8 @@ void UnloadGame() {
 	UnloadTexture(main_menu_enemy);
 
 	UnloadTexture(credits_screen);
+
+	UnloadTexture(launch_background);
 
 	UnloadTexture(level1_background);
 	UnloadTexture(player);
