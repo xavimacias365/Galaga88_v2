@@ -32,9 +32,9 @@ public:
 	Rectangle GetRec() const { return rec; }
 	void SetRec(Rectangle r) { rec = r; }
 	void SetPos(float x, float y) { rec.x = x; rec.y = y; }
-
+	
 	void SetX(float x) { rec.x = x; }
-	void SetY(float y) { rec.y = y; }
+	void SetY(float y) { rec.y = y; } 
 	float GetX() const { return rec.x; }
 	float GetY() const { return rec.y; }
 
