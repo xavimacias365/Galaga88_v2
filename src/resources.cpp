@@ -3,17 +3,21 @@
 
 	// Textures
 Texture2D main_menu_background;
+Texture2D main_menu_logo0;
+Texture2D main_menu_logo1;
 Texture2D main_menu_logo;
+Texture2D main_menu_logo2;
 Texture2D main_menu_namco;
 Texture2D main_menu_enemy;
+Texture2D main_menu_logo_lightning;
 
 Texture2D credits_screen;
 
 Texture2D launch_background;
 
 Texture2D level1_background;
-Texture2D player;
-Texture2D shot;
+Texture2D player_sprite;
+Texture2D shot_sprite;
 Texture2D stage_indicator;
 //Texture2D zako_enemy_sprite;
 Texture2D zako_frame1;
@@ -28,6 +32,11 @@ Font customFont;
 
 
 	// Sounds
+Sound main_menu_lightning;
+Sound main_menu_enemy_fly;
+
+Sound select;
+
 Sound fighter_shot;
 Sound fighter_killed;
 Sound enemy_shot;
@@ -45,17 +54,21 @@ void LoadGame() {
 
 // Load Textures 
 	main_menu_background = LoadTexture("resources/Textures/level-background/menu.png");
+	main_menu_logo0 = LoadTexture("resources/Textures/UI/original_logo.png");
+	main_menu_logo1 = LoadTexture("resources/Textures/UI/logo_no_lightning.png");
 	main_menu_logo = LoadTexture("resources/Textures/UI/logo.png");
+	main_menu_logo2 = LoadTexture("resources/Textures/UI/logo_white_lightning");
 	main_menu_namco = LoadTexture("resources/Textures/texts/logo_namco.png");
 	main_menu_enemy = LoadTexture("resources/Textures/UI/enemy_title_screen.png");
+	main_menu_logo_lightning = LoadTexture("resources/Textures/UI/logo_lightning.png");
 
 	credits_screen = LoadTexture("resources/Textures/UI/credits.png");
 
 	launch_background = LoadTexture("resources/Textures/level-background/launch.png");
 
 	level1_background = LoadTexture("resources/Textures/level-background/stage1.png");
-	player = LoadTexture("resources/Textures/entities/player/fighter.png");
-	shot = LoadTexture("resources/Textures/entities/enemies/projectiles/disparoplayer.png");
+	player_sprite = LoadTexture("resources/Textures/entities/player/fighter.png");
+	shot_sprite = LoadTexture("resources/Textures/entities/enemies/projectiles/disparoplayer.png");
 	stage_indicator = LoadTexture("resources/Textures/items/stage_indicator.png");
 //	zako_enemy_sprite = LoadTexture("resources/Textures/entities/enemies/zako_dim1.png");
 	zako_frame1 = LoadTexture("resources/Textures/entities/enemies/zako_dim1_1.png");
@@ -72,6 +85,11 @@ void LoadGame() {
 
 
 // Load Sounds
+	main_menu_lightning = LoadSound("resources/audio/sfx/main_menu_lightning.wav");
+	main_menu_enemy_fly = LoadSound("resources/audio/sfx/main_menu_enemy.wav");
+
+	select = LoadSound("resources/audio/sfx/select.wav");
+
 	fighter_shot = LoadSound("resources/audio/sfx/fighter_shoot.wav");
 	fighter_killed = LoadSound("resources/audio/sfx/fighter_destroyed.wav");
 	enemy_shot = LoadSound("resources/audio/sfx/galaga_shot.wav");
@@ -89,17 +107,21 @@ void LoadGame() {
 void UnloadGame() {
 
 	UnloadTexture(main_menu_background);
+	UnloadTexture(main_menu_logo0);
+	UnloadTexture(main_menu_logo1);
 	UnloadTexture(main_menu_logo);
+	UnloadTexture(main_menu_logo2);
 	UnloadTexture(main_menu_namco);
 	UnloadTexture(main_menu_enemy);
+	UnloadTexture(main_menu_logo_lightning);
 
 	UnloadTexture(credits_screen);
 
 	UnloadTexture(launch_background);
 
 	UnloadTexture(level1_background);
-	UnloadTexture(player);
-	UnloadTexture(shot);
+	UnloadTexture(player_sprite);
+	UnloadTexture(shot_sprite);
 	UnloadTexture(stage_indicator);
 	//	UnloadTexture(zako_enemy_sprite);
 	UnloadTexture(zako_frame1);
@@ -111,6 +133,11 @@ void UnloadGame() {
 
 	UnloadFont(customFont);
 
+
+	UnloadSound(main_menu_lightning);
+	UnloadSound(main_menu_enemy_fly);
+
+	UnloadSound(select);
 
 	UnloadSound(fighter_shot);
 	UnloadSound(fighter_killed);

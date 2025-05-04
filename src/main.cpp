@@ -38,10 +38,16 @@ int activeEnemies;
 int enemieskill;
 int currentMusic;
 int blink;
-
-MainMenuEnemy enemy;
+float alpha;
 
 const char* main_menu_text_start;
+
+enum LightningState { NUMBER, MOVING, FLASH, FINISH };
+LightningState lstate = NUMBER;
+
+MainMenuEnemy enemy;
+MainMenuLightning lightning;
+Player player;
 
 // functions
 void LoadGame();
@@ -52,6 +58,8 @@ void UnloadGame();
 void UpdateDrawFrame();
 
 void MainMenu();
+void Credits();
+void LaunchSequence();
 
 
 int main () {
@@ -89,26 +97,29 @@ int main () {
 void InitGame() {
 
 	// global variables
-	bool gameOver = false;
-	bool pause = false;
-	bool victory = false;
-	bool main_menu = true;
-	bool credits = false;
-	bool launchSequence = false;
-	bool inGame = false;
+	gameOver = false;
+	pause = false;
+	victory = false;
+	main_menu = true;
+	credits = false;
+	launchSequence = false;
+	inGame = false;
 
-	int score = 0;
-	int shootRate = 0;
-	int shootRate2 = 0;
-	int activeEnemies = 0;
-	int enemieskill = 0;
-	int currentMusic = 0;
-	int blink = 0;
-
-	const char* main_menu_text_start = "TO START PRESS < ENTER >!";
+	score = 0;
+	shootRate = 0;
+	shootRate2 = 0;
+	activeEnemies = 0;
+	enemieskill = 0;
+	currentMusic = 0;
+	blink = 0;
+	alpha = 0.0f;
+	
+	main_menu_text_start = "TO START PRESS < ENTER >!";
 
 	enemy = MainMenuEnemy({ 0, 555, 64, 64 }, { 5, 0 }, WHITE, true, 0, 0, 0, 0);
-
+	lightning = MainMenuLightning({ 20 + 200, 70 - 200, 64, 64 }, { 5, 5 }, WHITE, true, 0, 0, 0, 0);
+	player = Player({ ((screenWidth - 48) / 2), screenHeight - (screenHeight / 10), 16, 16 }, { 1, 5 }, WHITE);
+   
 	//Player player /*= { 0 }*/;
 	//Shot shot[50] /*= { 0 }*/;
 	//Enemy enemy[10] /*= { 0 }*/;
@@ -126,14 +137,10 @@ void UpdateGame() {
 		MainMenu();
 	}
 	else if (credits == true) {
-		if (IsKeyPressed(KEY_ENTER)) {
-			PlaySound(enemy_killed);
-			credits = false;
-			launchSequence = true;
-		}
+		Credits();
 	}
 	else if (launchSequence == true) {
-
+		LaunchSequence();
 	}
 }
 
@@ -160,13 +167,42 @@ void DrawGame() {
 
 	if (main_menu == true) {
 		DrawTextureEx(main_menu_background, { 0, 0 }, 0.0f, ((float)screenWidth / main_menu_background.width, (float)screenHeight / main_menu_background.height), WHITE);
-		DrawTextureEx(main_menu_logo, { (screenWidth - (main_menu_logo.width * fminf((800.0f / main_menu_logo.width), (400.0f / main_menu_logo.height)))) / 2.0f, ((screenHeight / 4.0f) - (main_menu_logo.height - fminf((800.0f / main_menu_logo.width), (400.0f / main_menu_logo.height)))) }, 0.0f, fminf((800.0f / main_menu_logo.width), (400.0f / main_menu_logo.height)), WHITE);
+		DrawTextureEx(main_menu_logo0, { (screenWidth - (main_menu_logo.width * fminf((800.0f / main_menu_logo.width), (400.0f / main_menu_logo.height)))) / 2.0f, (screenHeight / 4.0f) - ((main_menu_logo.height * fminf((800.0f / main_menu_logo.width), (400.0f / main_menu_logo.height))) / 2.0f) }, 0.0f, fminf((800.0f / main_menu_logo.width), (400.0f / main_menu_logo.height)), WHITE);
+
+		// Logo animation
+		if (lstate == NUMBER) {
+			if (alpha < 1.0f) {
+				alpha += 0.01f;
+				if (alpha > 1.0f) alpha = 1.0f;
+
+				Color fadeColor = { 255, 255, 255, (unsigned char)(alpha * 255) };
+				DrawTextureEx(main_menu_logo1, { (screenWidth - (main_menu_logo.width * fminf((800.0f / main_menu_logo.width), (400.0f / main_menu_logo.height)))) / 2.0f, (screenHeight / 4.0f) - ((main_menu_logo.height * fminf((800.0f / main_menu_logo.width), (400.0f / main_menu_logo.height))) / 2.0f) }, 0.0f, fminf((800.0f / main_menu_logo.width), (400.0f / main_menu_logo.height)), fadeColor);
+				//fadeColor = Fade(WHITE, alpha);
+			}
+
+			if (alpha >= 1.0f) {
+				lstate = MOVING;
+			}
+		}
+		else if (lstate == MOVING) {
+			DrawTextureEx(main_menu_logo1, { (screenWidth - (main_menu_logo.width * fminf((800.0f / main_menu_logo.width), (400.0f / main_menu_logo.height)))) / 2.0f, (screenHeight / 4.0f) - ((main_menu_logo.height * fminf((800.0f / main_menu_logo.width), (400.0f / main_menu_logo.height))) / 2.0f) }, 0.0f, fminf((800.0f / main_menu_logo.width), (400.0f / main_menu_logo.height)), WHITE);
+
+			if (lightning.GetX() == 20 && lightning.GetY() == 70) {
+				lstate = FLASH;
+			}
+
+		}
+		else if (lstate == FLASH) {
+			DrawTextureEx(main_menu_logo2, { (screenWidth - (main_menu_logo.width * fminf((800.0f / main_menu_logo.width), (400.0f / main_menu_logo.height)))) / 2.0f, (screenHeight / 4.0f) - ((main_menu_logo.height * fminf((800.0f / main_menu_logo.width), (400.0f / main_menu_logo.height))) / 2.0f) }, 0.0f, fminf((800.0f / main_menu_logo.width), (400.0f / main_menu_logo.height)), WHITE);
+		}
+		
 		DrawText("TO START PRESS [ENTER]!", (screenWidth - MeasureText("TO START PRESS [ENTER]!", fontSize)) / 2, (screenHeight - (screenHeight / 3)), fontSize, GREEN);
 		if (blink >= 0 && blink <= 40) { DrawText("INSERT COIN", (screenWidth - MeasureText("INSERT COIN", fontSize)) / 2, (screenHeight - ((screenHeight / 3) + 50)), fontSize, GREEN); }
 		DrawText("© 1981 1987 NAMCO", (screenWidth - MeasureText("© 1981 1987 NAMCO", fontSize)) / 2, 806, fontSize, WHITE);
 		DrawText("ALL RIGHTS RESERVED", (screenWidth - MeasureText("ALL RIGHTS RESERVED", fontSize)) / 2, 867, fontSize, WHITE); // (X) 150
 		DrawTextureEx(main_menu_namco, { ((screenWidth - main_menu_namco.width) / 2.0f), screenHeight - (screenHeight / 10) }, 0.0f, (main_menu_namco.width / 32, main_menu_namco.height / 32), WHITE);
 
+		DrawTextureEx(main_menu_logo_lightning, { lightning.GetX(), lightning.GetY() }, 0.0f, fminf((800.0f / main_menu_logo.width), (400.0f / main_menu_logo.height)), WHITE);
 		DrawTextureEx(main_menu_enemy, { enemy.GetX(), enemy.GetY() }, 0.0f, (float)screenWidth / (float) main_menu_background.width, WHITE);
 	}
 	else if (credits == true) {
@@ -175,6 +211,8 @@ void DrawGame() {
 	}
 	else if (launchSequence == true) {
 		DrawTextureEx(launch_background, { 0,0 }, 0.0f, ((float)screenWidth / credits_screen.width, (float)screenHeight / credits_screen.height), WHITE);
+
+		DrawTextureEx(player_sprite, { player.GetX(), player.GetY() }, 0.0f, (float)screenWidth / (float)main_menu_background.width, WHITE);
 	}
 
 	// end the frame and get ready for the next one  (display frame, poll input, etc...)
@@ -188,9 +226,14 @@ void UpdateDrawFrame() {
 
 void MainMenu() {
 
-	UpdateMusicStream(main_menu_music);
+ //Main Menu Lightning movement
+	if (lightning.GetX() > 20 && lightning.GetY() < 70) {
+		lightning.SetX(lightning.GetX() - lightning.GetSpeed().x);
+		lightning.SetY(lightning.GetY() + lightning.GetSpeed().y);
+	}
 
 // Main Menu Enemy movement
+	if (enemy.GetX() == 0) { PlaySound(main_menu_enemy_fly); }
 	if (enemy.GetX() < screenWidth + 50) {
 		enemy.SetX(enemy.GetX() + enemy.GetSpeed().x);
 	}
@@ -203,8 +246,27 @@ void MainMenu() {
 
 // Change State
 	if (IsKeyPressed(KEY_ENTER)) {
-		PlaySound(enemy_killed);
+		PlaySound(select);
 		main_menu = false;
 		credits = true;
+	}
+}
+
+void Credits() {
+// Pass to next screen
+	if (IsKeyPressed(KEY_ENTER)) {
+		PlaySound(select);
+		credits = false;
+		launchSequence = true;
+	}
+
+}
+
+void LaunchSequence() {
+
+	UpdateMusicStream(main_menu_music);
+
+	if (player.GetX() < screenHeight + 50) {
+		player.SetY(player.GetY() - player.GetSpeed().y);
 	}
 }

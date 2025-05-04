@@ -72,6 +72,12 @@ public:
 	MainMenuEnemy(Rectangle rec, Vector2 speed, Color color, bool active, int move, int cnt, int frameCounter, int currentFrame) : Enemy(rec, speed, color, active, move, cnt, frameCounter, currentFrame) {}
 };
 
+class MainMenuLightning : public Enemy {
+public:
+	MainMenuLightning() {}
+	MainMenuLightning(Rectangle rec, Vector2 speed, Color color, bool active, int move, int cnt, int frameCounter, int currentFrame) : Enemy(rec, speed, color, active, move, cnt, frameCounter, currentFrame) {}
+};
+
 // --- Enemy Manager ---
 class EnemyManager {
 	// TO DO: Spawn and Manage all enemies.
