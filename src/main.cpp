@@ -189,11 +189,17 @@ void DrawGame() {
 
 			if (lightning.GetX() == 20 && lightning.GetY() == 70) {
 				lstate = FLASH;
+				cout << "OK1!" << endl;
 			}
 
 		}
 		else if (lstate == FLASH) {
 			DrawTextureEx(main_menu_logo2, { (screenWidth - (main_menu_logo.width * fminf((800.0f / main_menu_logo.width), (400.0f / main_menu_logo.height)))) / 2.0f, (screenHeight / 4.0f) - ((main_menu_logo.height * fminf((800.0f / main_menu_logo.width), (400.0f / main_menu_logo.height))) / 2.0f) }, 0.0f, fminf((800.0f / main_menu_logo.width), (400.0f / main_menu_logo.height)), WHITE);
+
+
+		}
+		else if (lstate == FINISH) {
+			DrawTextureEx(main_menu_logo1, { (screenWidth - (main_menu_logo.width * fminf((800.0f / main_menu_logo.width), (400.0f / main_menu_logo.height)))) / 2.0f, (screenHeight / 4.0f) - ((main_menu_logo.height * fminf((800.0f / main_menu_logo.width), (400.0f / main_menu_logo.height))) / 2.0f) }, 0.0f, fminf((800.0f / main_menu_logo.width), (400.0f / main_menu_logo.height)), WHITE);
 		}
 		
 		DrawText("TO START PRESS [ENTER]!", (screenWidth - MeasureText("TO START PRESS [ENTER]!", fontSize)) / 2, (screenHeight - (screenHeight / 3)), fontSize, GREEN);
@@ -231,6 +237,8 @@ void MainMenu() {
 		lightning.SetX(lightning.GetX() - lightning.GetSpeed().x);
 		lightning.SetY(lightning.GetY() + lightning.GetSpeed().y);
 	}
+
+//	cout << lightning.GetX() << " " << lightning.GetY() << endl;
 
 // Main Menu Enemy movement
 	if (enemy.GetX() == 0) { PlaySound(main_menu_enemy_fly); }
