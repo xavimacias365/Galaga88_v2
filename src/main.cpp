@@ -29,6 +29,8 @@ bool main_menu = 1;
 bool credits;
 bool launchSequence;
 bool inGame;
+enum LevelStage { LEVEL1, LEVEL2 };
+LevelStage level = LEVEL1;
 
 int score;
 int highscore;
@@ -60,7 +62,7 @@ void UpdateDrawFrame();
 void MainMenu();
 void Credits();
 void LaunchSequence();
-
+void InGame();
 
 int main () {
 	// Tell the window to use vsync and work on high DPI displays
@@ -118,7 +120,7 @@ void InitGame() {
 
 	enemy = MainMenuEnemy({ 0, 555, 64, 64 }, { 5, 0 }, WHITE, true, 0, 0, 0, 0);
 	lightning = MainMenuLightning({ 20 + 200, 70 - 200, 64, 64 }, { 5, 5 }, WHITE, true, 0, 0, 0, 0);
-	player = Player({ ((screenWidth - 48) / 2), screenHeight - (screenHeight / 10), 16, 16 }, { 1, 5 }, WHITE);
+	player = Player({ ((screenWidth - 48) / 2), screenHeight - (screenHeight / 10), 64, 64 }, { 4, 5 }, WHITE);
    
 	//Player player /*= { 0 }*/;
 	//Shot shot[50] /*= { 0 }*/;
@@ -141,6 +143,9 @@ void UpdateGame() {
 	}
 	else if (launchSequence == true) {
 		LaunchSequence();
+	}
+	else if (inGame == true) {
+		InGame();
 	}
 }
 
@@ -189,17 +194,21 @@ void DrawGame() {
 
 			if (lightning.GetX() == 20 && lightning.GetY() == 70) {
 				lstate = FLASH;
-				cout << "OK1!" << endl;
 			}
 
 		}
 		else if (lstate == FLASH) {
+			lightning.SetX(lightning.GetX() + 500);
+			lightning.SetY(lightning.GetY() - 500);
+
 			DrawTextureEx(main_menu_logo2, { (screenWidth - (main_menu_logo.width * fminf((800.0f / main_menu_logo.width), (400.0f / main_menu_logo.height)))) / 2.0f, (screenHeight / 4.0f) - ((main_menu_logo.height * fminf((800.0f / main_menu_logo.width), (400.0f / main_menu_logo.height))) / 2.0f) }, 0.0f, fminf((800.0f / main_menu_logo.width), (400.0f / main_menu_logo.height)), WHITE);
 
+			lstate = FINISH;
 
 		}
 		else if (lstate == FINISH) {
-			DrawTextureEx(main_menu_logo1, { (screenWidth - (main_menu_logo.width * fminf((800.0f / main_menu_logo.width), (400.0f / main_menu_logo.height)))) / 2.0f, (screenHeight / 4.0f) - ((main_menu_logo.height * fminf((800.0f / main_menu_logo.width), (400.0f / main_menu_logo.height))) / 2.0f) }, 0.0f, fminf((800.0f / main_menu_logo.width), (400.0f / main_menu_logo.height)), WHITE);
+			DrawTextureEx(main_menu_logo, { (screenWidth - (main_menu_logo.width * fminf((800.0f / main_menu_logo.width), (400.0f / main_menu_logo.height)))) / 2.0f, (screenHeight / 4.0f) - ((main_menu_logo.height * fminf((800.0f / main_menu_logo.width), (400.0f / main_menu_logo.height))) / 2.0f) }, 0.0f, fminf((800.0f / main_menu_logo.width), (400.0f / main_menu_logo.height)), WHITE);
+				
 		}
 		
 		DrawText("TO START PRESS [ENTER]!", (screenWidth - MeasureText("TO START PRESS [ENTER]!", fontSize)) / 2, (screenHeight - (screenHeight / 3)), fontSize, GREEN);
@@ -213,12 +222,21 @@ void DrawGame() {
 	}
 	else if (credits == true) {
 		DrawTextureEx(credits_screen, { 0, 0 }, 0.0f, ((float)screenWidth / credits_screen.width, (float)screenHeight / credits_screen.height), WHITE);
-		DrawText("PRESS [ENTER] TO CONTINUE!", (screenWidth - MeasureText("PRESS [ENTER] TO CONTINUE", fontSize)) / 2, (screenHeight / 4) - 50, fontSize, GREEN);
+		DrawText("PRESS [ENTER] TO CONTINUE!", (screenWidth - MeasureText("PRESS [ENTER] TO CONTINUE!", fontSize)) / 2, (screenHeight / 4) - 50, fontSize, GREEN);
 	}
 	else if (launchSequence == true) {
 		DrawTextureEx(launch_background, { 0,0 }, 0.0f, ((float)screenWidth / credits_screen.width, (float)screenHeight / credits_screen.height), WHITE);
 
 		DrawTextureEx(player_sprite, { player.GetX(), player.GetY() }, 0.0f, (float)screenWidth / (float)main_menu_background.width, WHITE);
+	}
+	else if (inGame == true && level == LEVEL1) {
+		DrawTextureEx(level1_background, { 0, 0 }, 0.0f, ((float)screenWidth / credits_screen.width, (float)screenHeight / credits_screen.height), WHITE);
+		DrawTextureEx(player_sprite, { player.GetX(), player.GetY() }, 0.0f, (float)screenWidth / (float)main_menu_background.width, WHITE);
+
+	}
+
+	if (pause == true) {
+		DrawText("GAME PAUSED!", (screenWidth - MeasureText("GAME PAUSED!", fontSize)) / 2, screenHeight - 137, fontSize, RED);
 	}
 
 	// end the frame and get ready for the next one  (display frame, poll input, etc...)
@@ -233,12 +251,12 @@ void UpdateDrawFrame() {
 void MainMenu() {
 
  //Main Menu Lightning movement
-	if (lightning.GetX() > 20 && lightning.GetY() < 70) {
-		lightning.SetX(lightning.GetX() - lightning.GetSpeed().x);
-		lightning.SetY(lightning.GetY() + lightning.GetSpeed().y);
+	if (lstate == MOVING) {
+		if (lightning.GetX() > 20 && lightning.GetY() < 70) {
+			lightning.SetX(lightning.GetX() - lightning.GetSpeed().x);
+			lightning.SetY(lightning.GetY() + lightning.GetSpeed().y);
+		}
 	}
-
-//	cout << lightning.GetX() << " " << lightning.GetY() << endl;
 
 // Main Menu Enemy movement
 	if (enemy.GetX() == 0) { PlaySound(main_menu_enemy_fly); }
@@ -274,7 +292,28 @@ void LaunchSequence() {
 
 	UpdateMusicStream(main_menu_music);
 
-	if (player.GetX() < screenHeight + 50) {
+	if (player.GetY() > -screenHeight) {
 		player.SetY(player.GetY() - player.GetSpeed().y);
 	}
+	else {
+		launchSequence = false;
+		inGame = true;
+		player.SetY(screenHeight - (screenHeight / 5));
+	}
+
+}
+
+void InGame() {
+	if (IsKeyPressed('P')) { pause = !pause; }
+	if (!pause) {
+		// Player Movement
+		if (IsKeyDown('A') || IsKeyDown(KEY_LEFT)) { player.SetX(player.GetX() - player.GetSpeed().x); }
+		if (IsKeyDown('D') || IsKeyDown(KEY_RIGHT)) { player.SetX(player.GetX() + player.GetSpeed().x); }
+
+		// Player Wall Colisions
+		if (player.GetX() <= 0) { player.SetX(0); }
+		if (player.GetX() + player.GetRec().width >= screenWidth) { player.SetX(screenWidth - player.GetRec().width); }
+
+	}
+
 }

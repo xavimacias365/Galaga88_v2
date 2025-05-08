@@ -57,7 +57,7 @@ void LoadGame() {
 	main_menu_logo0 = LoadTexture("resources/Textures/UI/original_logo.png");
 	main_menu_logo1 = LoadTexture("resources/Textures/UI/logo_no_lightning.png");
 	main_menu_logo = LoadTexture("resources/Textures/UI/logo.png");
-	main_menu_logo2 = LoadTexture("resources/Textures/UI/logo_white_lightning");
+	main_menu_logo2 = LoadTexture("resources/Textures/UI/logo_white_lightning.png");
 	main_menu_namco = LoadTexture("resources/Textures/texts/logo_namco.png");
 	main_menu_enemy = LoadTexture("resources/Textures/UI/enemy_title_screen.png");
 	main_menu_logo_lightning = LoadTexture("resources/Textures/UI/logo_lightning.png");
