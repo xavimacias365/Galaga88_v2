@@ -22,9 +22,9 @@ extern Texture2D level1_background;
 extern Texture2D player_sprite;
 extern Texture2D shot_sprite;
 extern Texture2D stage_indicator;
-//extern Texture2D zako_enemy_sprite;
-extern Texture2D zako_frame1;
-extern Texture2D zako_frame2;
+extern Texture2D zakko_sprite;
+extern Texture2D zakko_frame1;
+extern Texture2D zakko_frame2;
 extern Texture2D enemy_explosion;
 
 extern Texture2D win_screen;
@@ -37,6 +37,7 @@ extern Font customFont;
 	// Sounds
 extern Sound main_menu_lightning;
 extern Sound main_menu_enemy_fly;
+extern Sound main_menu_start;
 
 extern Sound select;
 

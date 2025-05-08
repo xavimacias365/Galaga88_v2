@@ -64,8 +64,25 @@ protected:
 public:
 	Enemy() {}
 	Enemy(Rectangle rec, Vector2 speed, Color color, bool active, int move, int cnt, int frameCounter, int currentFrame) : Entity(rec, speed, color), active(active), move(move), cnt(cnt), frameCounter(frameCounter), currentFrame(currentFrame) {}
+
+	bool IsActive() const { return active; }
+
+	void UpdateAnimation(int maxFrames, int frameSpeed) {
+		frameCounter++;
+		if (frameCounter >= frameSpeed) {
+			frameCounter = 0;
+			currentFrame++;
+			if (currentFrame >= maxFrames) {
+				currentFrame = 0;
+			}
+		}
+	}
+
+	int GetCurrentFrame() const { return currentFrame; }
+
 };
 
+// --- Enemies ---
 class MainMenuEnemy : public Enemy {
 public:
 	MainMenuEnemy() {}
@@ -76,6 +93,12 @@ class MainMenuLightning : public Enemy {
 public:
 	MainMenuLightning() {}
 	MainMenuLightning(Rectangle rec, Vector2 speed, Color color, bool active, int move, int cnt, int frameCounter, int currentFrame) : Enemy(rec, speed, color, active, move, cnt, frameCounter, currentFrame) {}
+};
+
+class Zakko : public Enemy {
+public:
+	Zakko() {}
+	Zakko(Rectangle rec, Vector2 speed, Color color, bool active, int move, int cnt, int frameCounter, int currentFrame) : Enemy(rec, speed, color, active, move, cnt, frameCounter, currentFrame) {}
 };
 
 // --- Enemy Manager ---

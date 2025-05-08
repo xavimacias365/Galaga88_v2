@@ -49,6 +49,7 @@ LightningState lstate = NUMBER;
 
 MainMenuEnemy enemy;
 MainMenuLightning lightning;
+vector<Zakko> zakkos;
 Player player;
 
 // functions
@@ -115,18 +116,18 @@ void InitGame() {
 	currentMusic = 0;
 	blink = 0;
 	alpha = 0.0f;
-	
+
 	main_menu_text_start = "TO START PRESS < ENTER >!";
 
 	enemy = MainMenuEnemy({ 0, 555, 64, 64 }, { 5, 0 }, WHITE, true, 0, 0, 0, 0);
 	lightning = MainMenuLightning({ 20 + 200, 70 - 200, 64, 64 }, { 5, 5 }, WHITE, true, 0, 0, 0, 0);
+
+	for (int i = 0; i < 10; ++i) {
+		zakkos.push_back(Zakko({ i * 64.0f, 100, 32, 32 }, { 1.0f, 0 }, WHITE, true, 0, 0, 0, 0));
+	}
+
 	player = Player({ ((screenWidth - 48) / 2), screenHeight - (screenHeight / 10), 64, 64 }, { 4, 5 }, WHITE);
    
-	//Player player /*= { 0 }*/;
-	//Shot shot[50] /*= { 0 }*/;
-	//Enemy enemy[10] /*= { 0 }*/;
-	//EnemyShot e_shoot[50] /*= { 0 }*/;
-
 // Player
 	Player player;
 	player.SetX(420);
@@ -169,6 +170,9 @@ void DrawGame() {
  	// CENTER IMG FORMULA -> (screenWidth - myImage.width) / 2
 	// CENTER TEXT FORMULA -> (screenWidth - MeasureText("TEXT", fontSize)) / 2		FONT SIZE = 37
 	// CORRECT IMG SCALE -> (screenWidth - myImage.width * fminf((desiredWidth / myImage.width), (desiredHeight / myImage.height)) / 2.0f)
+
+	Rectangle sourceRec = { 0.0f, 0.0f, 16.0f,  16.0f };
+	float scale = (float)screenWidth / (float)main_menu_background.width;
 
 	if (main_menu == true) {
 		DrawTextureEx(main_menu_background, { 0, 0 }, 0.0f, ((float)screenWidth / main_menu_background.width, (float)screenHeight / main_menu_background.height), WHITE);
@@ -231,8 +235,21 @@ void DrawGame() {
 	}
 	else if (inGame == true && level == LEVEL1) {
 		DrawTextureEx(level1_background, { 0, 0 }, 0.0f, ((float)screenWidth / credits_screen.width, (float)screenHeight / credits_screen.height), WHITE);
+		
+		// Draw Player
 		DrawTextureEx(player_sprite, { player.GetX(), player.GetY() }, 0.0f, (float)screenWidth / (float)main_menu_background.width, WHITE);
 
+		// Draw Enemies
+		/*for (const Zakko& z : zakkos) {
+			DrawTextureEx(zakko_frame1, { z.GetX(), z.GetY() }, 0.0f, (float)screenWidth / (float)main_menu_background.width, WHITE);
+		}*/
+
+		for (const Zakko& z : zakkos) {
+			if (z.IsActive()) {
+				sourceRec = { z.GetCurrentFrame() * 16.0f, 0.0f, 16.0f, 16.0f };
+				DrawTexturePro(zakko_sprite, sourceRec, Rectangle { z.GetX(), z.GetY(), sourceRec.width * scale, sourceRec.height * scale }, { 0, 0 }, 0.0f, WHITE);
+			}
+		}
 	}
 
 	if (pause == true) {
@@ -258,6 +275,10 @@ void MainMenu() {
 		}
 	}
 
+	if (lightning.GetX() == 20 && lightning.GetY() == 70) {
+		PlaySound(main_menu_lightning);
+	}
+
 // Main Menu Enemy movement
 	if (enemy.GetX() == 0) { PlaySound(main_menu_enemy_fly); }
 	if (enemy.GetX() < screenWidth + 50) {
@@ -272,7 +293,7 @@ void MainMenu() {
 
 // Change State
 	if (IsKeyPressed(KEY_ENTER)) {
-		PlaySound(select);
+		PlaySound(main_menu_start);
 		main_menu = false;
 		credits = true;
 	}
@@ -295,7 +316,8 @@ void LaunchSequence() {
 	if (player.GetY() > -screenHeight) {
 		player.SetY(player.GetY() - player.GetSpeed().y);
 	}
-	else {
+	
+	if (IsKeyPressed(KEY_ENTER) || player.GetY() <= -screenHeight) {
 		launchSequence = false;
 		inGame = true;
 		player.SetY(screenHeight - (screenHeight / 5));
@@ -316,4 +338,42 @@ void InGame() {
 
 	}
 
+
+
+	// Zakko Movement
+	for (Zakko& z : zakkos) {
+		if (z.IsActive()) {
+			z.SetX(z.GetX() + z.GetSpeed().x);
+		}
+	}
+
+	// Zakko Wall Collisions
+	float leftMostZakkoCol = screenWidth;
+	float rightMostZakkoCol = 0.0f;
+		
+		// Find edges
+	for (Zakko& z : zakkos) {
+		if (z.IsActive()) {
+			if (z.GetX() < leftMostZakkoCol) { leftMostZakkoCol = z.GetX(); }
+			if (z.GetX() + z.GetRec().width > rightMostZakkoCol) { rightMostZakkoCol = z.GetX() + z.GetRec().width; }
+		}
+	}
+		// Check collision with walls
+	bool hitLeftWall = (leftMostZakkoCol <= 0);
+	bool hitRightWall = (rightMostZakkoCol >= screenWidth - 16);
+	if (hitLeftWall || hitRightWall) {
+		for (Zakko& z : zakkos) {
+			Vector2 speed = z.GetSpeed();
+			speed.x *= -1;
+			z.SetSpeed(speed);
+		}
+	}
+
+	// Zakko Frame Animation
+	for (Zakko& z : zakkos) {
+		if (z.IsActive()) {
+			z.SetX(z.GetX() + z.GetSpeed().x);
+			z.UpdateAnimation(2, 10);
+		}
+	}
 }

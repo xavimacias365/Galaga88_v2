@@ -19,9 +19,9 @@ Texture2D level1_background;
 Texture2D player_sprite;
 Texture2D shot_sprite;
 Texture2D stage_indicator;
-//Texture2D zako_enemy_sprite;
-Texture2D zako_frame1;
-Texture2D zako_frame2;
+Texture2D zakko_sprite;
+Texture2D zakko_frame1;
+Texture2D zakko_frame2;
 Texture2D enemy_explosion;
 
 Texture2D win_screen;
@@ -34,6 +34,7 @@ Font customFont;
 	// Sounds
 Sound main_menu_lightning;
 Sound main_menu_enemy_fly;
+Sound main_menu_start;
 
 Sound select;
 
@@ -70,9 +71,9 @@ void LoadGame() {
 	player_sprite = LoadTexture("resources/Textures/entities/player/fighter.png");
 	shot_sprite = LoadTexture("resources/Textures/entities/enemies/projectiles/disparoplayer.png");
 	stage_indicator = LoadTexture("resources/Textures/items/stage_indicator.png");
-//	zako_enemy_sprite = LoadTexture("resources/Textures/entities/enemies/zako_dim1.png");
-	zako_frame1 = LoadTexture("resources/Textures/entities/enemies/zako_dim1_1.png");
-	zako_frame2 = LoadTexture("resources/Textures/entities/enemies/zako_dim1_2.png");
+	zakko_sprite = LoadTexture("resources/Textures/entities/enemies/zako_dim1.png");
+	zakko_frame1 = LoadTexture("resources/Textures/entities/enemies/zako_dim1_1.png");
+	zakko_frame2 = LoadTexture("resources/Textures/entities/enemies/zako_dim1_2.png");
 	enemy_explosion = LoadTexture("resources/Textures/entities/player/explosion.png");
 
 	win_screen = LoadTexture("resources/Textures/UI/win_condition.png");
@@ -87,6 +88,7 @@ void LoadGame() {
 // Load Sounds
 	main_menu_lightning = LoadSound("resources/audio/sfx/main_menu_lightning.wav");
 	main_menu_enemy_fly = LoadSound("resources/audio/sfx/main_menu_enemy.wav");
+	main_menu_start = LoadSound("resources/audio/sfx/main_menu_start.wav");
 
 	select = LoadSound("resources/audio/sfx/select.wav");
 
@@ -123,9 +125,9 @@ void UnloadGame() {
 	UnloadTexture(player_sprite);
 	UnloadTexture(shot_sprite);
 	UnloadTexture(stage_indicator);
-	//	UnloadTexture(zako_enemy_sprite);
-	UnloadTexture(zako_frame1);
-	UnloadTexture(zako_frame2);
+	UnloadTexture(zakko_sprite);
+	UnloadTexture(zakko_frame1);
+	UnloadTexture(zakko_frame2);
 	UnloadTexture(enemy_explosion);
 
 	UnloadTexture(win_screen);
@@ -136,6 +138,7 @@ void UnloadGame() {
 
 	UnloadSound(main_menu_lightning);
 	UnloadSound(main_menu_enemy_fly);
+	UnloadSound(main_menu_start);
 
 	UnloadSound(select);
 
