@@ -126,7 +126,7 @@ void InitGame() {
 		zakkos.push_back(Zakko({ i * 64.0f, 100, 32, 32 }, { 1.0f, 0 }, WHITE, true, 0, 0, 0, 0));
 	}
 
-	player = Player({ ((screenWidth - 48) / 2), screenHeight - (screenHeight / 10), 64, 64 }, { 4, 5 }, WHITE);
+	player = Player({ ((screenWidth - 48) / 2), screenHeight - (screenHeight / 10), 64, 64 }, { 5, 5 }, WHITE);
    
 // Player
 	Player player;
@@ -191,6 +191,7 @@ void DrawGame() {
 
 			if (alpha >= 1.0f) {
 				lstate = MOVING;
+				alpha = 0.0f;
 			}
 		}
 		else if (lstate == MOVING) {
@@ -234,19 +235,28 @@ void DrawGame() {
 		DrawTextureEx(player_sprite, { player.GetX(), player.GetY() }, 0.0f, (float)screenWidth / (float)main_menu_background.width, WHITE);
 	}
 	else if (inGame == true && level == LEVEL1) {
-		DrawTextureEx(level1_background, { 0, 0 }, 0.0f, ((float)screenWidth / credits_screen.width, (float)screenHeight / credits_screen.height), WHITE);
+
+		DrawTextureEx(level3_background, { 0, 0 }, 0.0f, ((float)screenWidth / credits_screen.width, (float)screenHeight / credits_screen.height), WHITE);
+
+		if (alpha < 1.0f) {
+			alpha += 0.01f;
+			if (alpha > 1.0f) alpha = 1.0f;
+
+			Color fadeColor = { 255, 255, 255, (unsigned char)(alpha * 255) };
+			DrawTextureEx(level1_background, { 0, 0 }, 0.0f, ((float)screenWidth / credits_screen.width, (float)screenHeight / credits_screen.height), fadeColor);
+		}
+		else {
+			Color fadeColor = WHITE;
+			DrawTextureEx(level1_background, { 0, 0 }, 0.0f, ((float)screenWidth / credits_screen.width, (float)screenHeight / credits_screen.height), fadeColor);
+		}
 		
 		// Draw Player
 		DrawTextureEx(player_sprite, { player.GetX(), player.GetY() }, 0.0f, (float)screenWidth / (float)main_menu_background.width, WHITE);
 
-		// Draw Enemies
-		/*for (const Zakko& z : zakkos) {
-			DrawTextureEx(zakko_frame1, { z.GetX(), z.GetY() }, 0.0f, (float)screenWidth / (float)main_menu_background.width, WHITE);
-		}*/
-
+		// Draw Zakko Enemies
 		for (const Zakko& z : zakkos) {
 			if (z.IsActive()) {
-				sourceRec = { z.GetCurrentFrame() * 16.0f, 0.0f, 16.0f, 16.0f };
+				sourceRec = { 0.0f, z.GetCurrentFrame() * 16.0f, 16.0f, 16.0f };
 				DrawTexturePro(zakko_sprite, sourceRec, Rectangle { z.GetX(), z.GetY(), sourceRec.width * scale, sourceRec.height * scale }, { 0, 0 }, 0.0f, WHITE);
 			}
 		}
@@ -336,44 +346,46 @@ void InGame() {
 		if (player.GetX() <= 0) { player.SetX(0); }
 		if (player.GetX() + player.GetRec().width >= screenWidth) { player.SetX(screenWidth - player.GetRec().width); }
 
-	}
+		// Player Shooting
 
 
+	//#-------#
 
-	// Zakko Movement
-	for (Zakko& z : zakkos) {
-		if (z.IsActive()) {
-			z.SetX(z.GetX() + z.GetSpeed().x);
-		}
-	}
-
-	// Zakko Wall Collisions
-	float leftMostZakkoCol = screenWidth;
-	float rightMostZakkoCol = 0.0f;
-		
-		// Find edges
-	for (Zakko& z : zakkos) {
-		if (z.IsActive()) {
-			if (z.GetX() < leftMostZakkoCol) { leftMostZakkoCol = z.GetX(); }
-			if (z.GetX() + z.GetRec().width > rightMostZakkoCol) { rightMostZakkoCol = z.GetX() + z.GetRec().width; }
-		}
-	}
-		// Check collision with walls
-	bool hitLeftWall = (leftMostZakkoCol <= 0);
-	bool hitRightWall = (rightMostZakkoCol >= screenWidth - 16);
-	if (hitLeftWall || hitRightWall) {
+		// Zakko Movement
 		for (Zakko& z : zakkos) {
-			Vector2 speed = z.GetSpeed();
-			speed.x *= -1;
-			z.SetSpeed(speed);
+			if (z.IsActive()) {
+				z.SetX(z.GetX() + z.GetSpeed().x);
+			}
 		}
-	}
 
-	// Zakko Frame Animation
-	for (Zakko& z : zakkos) {
-		if (z.IsActive()) {
-			z.SetX(z.GetX() + z.GetSpeed().x);
-			z.UpdateAnimation(2, 10);
+		// Zakko Wall Collisions
+		float leftMostZakkoCol = screenWidth;
+		float rightMostZakkoCol = 0.0f;
+
+		// Find edges
+		for (Zakko& z : zakkos) {
+			if (z.IsActive()) {
+				if (z.GetX() < leftMostZakkoCol) { leftMostZakkoCol = z.GetX(); }
+				if (z.GetX() + z.GetRec().width > rightMostZakkoCol) { rightMostZakkoCol = z.GetX() + z.GetRec().width; }
+			}
+		}
+
+		// Check collision with walls
+		bool hitLeftWall = (leftMostZakkoCol <= 0);
+		bool hitRightWall = (rightMostZakkoCol >= screenWidth - 16);
+		if (hitLeftWall || hitRightWall) {
+			for (Zakko& z : zakkos) {
+				Vector2 speed = z.GetSpeed();
+				speed.x *= -1;
+				z.SetSpeed(speed);
+			}
+		}
+
+		// Zakko Frame Animation
+		for (Zakko& z : zakkos) {
+			if (z.IsActive()) {
+				z.UpdateAnimation(2, 20);
+			}
 		}
 	}
 }

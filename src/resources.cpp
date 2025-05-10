@@ -16,6 +16,7 @@ Texture2D credits_screen;
 Texture2D launch_background;
 
 Texture2D level1_background;
+Texture2D level3_background;
 Texture2D player_sprite;
 Texture2D shot_sprite;
 Texture2D stage_indicator;
@@ -68,6 +69,7 @@ void LoadGame() {
 	launch_background = LoadTexture("resources/Textures/level-background/launch.png");
 
 	level1_background = LoadTexture("resources/Textures/level-background/stage1.png");
+	level3_background = LoadTexture("resources/Textures/level-background/stage3.png");
 	player_sprite = LoadTexture("resources/Textures/entities/player/fighter.png");
 	shot_sprite = LoadTexture("resources/Textures/entities/enemies/projectiles/disparoplayer.png");
 	stage_indicator = LoadTexture("resources/Textures/items/stage_indicator.png");
@@ -122,6 +124,7 @@ void UnloadGame() {
 	UnloadTexture(launch_background);
 
 	UnloadTexture(level1_background);
+	UnloadTexture(level3_background);
 	UnloadTexture(player_sprite);
 	UnloadTexture(shot_sprite);
 	UnloadTexture(stage_indicator);
