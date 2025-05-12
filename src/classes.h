@@ -121,6 +121,10 @@ protected:
 public:
 	Shot() {}
 	Shot(Rectangle rec, Vector2 speed, Color color, bool active) : Entity(rec, speed, color), active(active) {}
+
+	bool IsActive() const { return active; }
+	void ChangeState(bool a) { active = a; }
+
 };
 
 // --- Enemy Shot ---

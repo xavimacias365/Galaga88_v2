@@ -34,8 +34,8 @@ LevelStage level = LEVEL1;
 
 int score;
 int highscore;
-int shootRate;
-int shootRate2;
+int shotRate;
+int shotRate2;
 int activeEnemies;
 int enemieskill;
 int currentMusic;
@@ -51,6 +51,7 @@ MainMenuEnemy enemy;
 MainMenuLightning lightning;
 vector<Zakko> zakkos;
 Player player;
+vector<PlayerShot> shot;
 
 // functions
 void LoadGame();
@@ -109,8 +110,8 @@ void InitGame() {
 	inGame = false;
 
 	score = 0;
-	shootRate = 0;
-	shootRate2 = 0;
+	shotRate = 0;
+	shotRate2 = 0;
 	activeEnemies = 0;
 	enemieskill = 0;
 	currentMusic = 0;
@@ -127,7 +128,11 @@ void InitGame() {
 	}
 
 	player = Player({ ((screenWidth - 48) / 2), screenHeight - (screenHeight / 10), 64, 64 }, { 5, 5 }, WHITE);
-   
+	
+	for (int i = 0; i < 50; ++i) {
+		shot.push_back(PlayerShot({player.GetRec().x + player.GetRec().width / 2, player.GetRec().y, 5, 10}, {0, 10}, WHITE, false));
+	}
+
 // Player
 	Player player;
 	player.SetX(420);
@@ -260,6 +265,13 @@ void DrawGame() {
 				DrawTexturePro(zakko_sprite, sourceRec, Rectangle { z.GetX(), z.GetY(), sourceRec.width * scale, sourceRec.height * scale }, { 0, 0 }, 0.0f, WHITE);
 			}
 		}
+
+		// Draw Player Shoots
+		for (const Shot& s : shot) {
+			if (s.IsActive()) {
+				DrawTexturePro(shot_sprite, sourceRec, Rectangle{ s.GetX(), s.GetY(), sourceRec.width * scale, sourceRec.height * scale }, { 0, 0 }, 0.0f, WHITE);
+			}
+		}
 	}
 
 	if (pause == true) {
@@ -347,7 +359,19 @@ void InGame() {
 		if (player.GetX() + player.GetRec().width >= screenWidth) { player.SetX(screenWidth - player.GetRec().width); }
 
 		// Player Shooting
+		if (IsKeyPressed(KEY_SPACE)) {
+			shotRate += 5;
 
+			for (Shot& s : shot) {
+				if (s.IsActive() == 0 && shotRate % 35 == 0) {
+					s.SetX((player.GetX() + player.GetRec().width / 2) - 3);
+					s.SetY(player.GetY());
+					s.ChangeState(true);
+					PlaySound(fighter_shot);
+					break;
+				}
+			}
+		}
 
 	//#-------#
 
@@ -385,6 +409,23 @@ void InGame() {
 		for (Zakko& z : zakkos) {
 			if (z.IsActive()) {
 				z.UpdateAnimation(2, 20);
+			}
+		}
+
+		//#-------#
+
+		// Shot Behaviour
+		for (Shot& s : shot) {
+			if (s.IsActive()) {
+				s.SetY(s.GetSpeed().y);
+			}
+
+		// Colision with enemy
+
+
+		// Despawn shot
+			if (s.GetY() <= 0) {
+				s.ChangeState(false);
 			}
 		}
 	}
