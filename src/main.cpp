@@ -424,7 +424,7 @@ void InGame() {
 
 
 		// Despawn shot
-			if (s.GetY() <= 0) {
+			if (s.GetY() < 0) {
 				s.ChangeState(false);
 			}
 		}
