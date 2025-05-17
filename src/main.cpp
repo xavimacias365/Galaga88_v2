@@ -269,7 +269,8 @@ void DrawGame() {
 		// Draw Player Shoots
 		for (const Shot& s : shot) {
 			if (s.IsActive()) {
-				DrawTexturePro(shot_sprite, sourceRec, Rectangle{ s.GetX(), s.GetY(), sourceRec.width * scale, sourceRec.height * scale }, { 0, 0 }, 0.0f, WHITE);
+				//DrawTexturePro(shot_sprite, sourceRec, Rectangle{ s.GetX(), s.GetY(), sourceRec.width * scale, sourceRec.height * scale }, { 0, 0 }, 0.0f, WHITE);
+				DrawTextureEx(shot_sprite, { s.GetX(), s.GetY() }, 0.0f, scale, WHITE);
 			}
 		}
 	}
@@ -360,10 +361,8 @@ void InGame() {
 
 		// Player Shooting
 		if (IsKeyPressed(KEY_SPACE)) {
-			shotRate += 5;
-
 			for (Shot& s : shot) {
-				if (s.IsActive() == 0 && shotRate % 35 == 0) {
+				if (!s.IsActive()) {
 					s.SetX((player.GetX() + player.GetRec().width / 2) - 3);
 					s.SetY(player.GetY());
 					s.ChangeState(true);
@@ -417,7 +416,7 @@ void InGame() {
 		// Shot Behaviour
 		for (Shot& s : shot) {
 			if (s.IsActive()) {
-				s.SetY(s.GetSpeed().y);
+				s.SetY(s.GetY() - s.GetSpeed().y);
 			}
 
 		// Colision with enemy
