@@ -80,6 +80,8 @@ public:
 
 	int GetCurrentFrame() const { return currentFrame; }
 
+	void ChangeState(bool a) { active = a; }
+
 };
 
 // --- Enemies ---

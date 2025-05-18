@@ -34,10 +34,8 @@ LevelStage level = LEVEL1;
 
 int score;
 int highscore;
-int shotRate;
-int shotRate2;
+int lives;
 int activeEnemies;
-int enemieskill;
 int currentMusic;
 int blink;
 float alpha;
@@ -110,10 +108,8 @@ void InitGame() {
 	inGame = false;
 
 	score = 0;
-	shotRate = 0;
-	shotRate2 = 0;
+	lives = 1;
 	activeEnemies = 0;
-	enemieskill = 0;
 	currentMusic = 0;
 	blink = 0;
 	alpha = 0.0f;
@@ -229,6 +225,8 @@ void DrawGame() {
 
 		DrawTextureEx(main_menu_logo_lightning, { lightning.GetX(), lightning.GetY() }, 0.0f, fminf((800.0f / main_menu_logo.width), (400.0f / main_menu_logo.height)), WHITE);
 		DrawTextureEx(main_menu_enemy, { enemy.GetX(), enemy.GetY() }, 0.0f, (float)screenWidth / (float) main_menu_background.width, WHITE);
+
+		//DrawText((TextFormat("%04i ", lives), (screenWidth / 10 - MeasureText("%04i ", fontSize)))
 	}
 	else if (credits == true) {
 		DrawTextureEx(credits_screen, { 0, 0 }, 0.0f, ((float)screenWidth / credits_screen.width, (float)screenHeight / credits_screen.height), WHITE);
@@ -420,12 +418,29 @@ void InGame() {
 			}
 
 		// Colision with enemy
+			for (Zakko& z : zakkos) {
+				if (z.IsActive() && s.IsActive()) {
+					if  (CheckCollisionRecs(s.GetRec(), z.GetRec())) {
+						s.ChangeState(false);
+						z.ChangeState(false);
+						PlaySound(enemy_killed);
 
+					// Score
+						score += 100;
+						if (score > highscore) {
+							highscore = score;
+						}
+					}
+				}
+			}
 
 		// Despawn shot
 			if (s.GetY() < 0) {
 				s.ChangeState(false);
 			}
 		}
+
+		//#-------#
+
 	}
 }
