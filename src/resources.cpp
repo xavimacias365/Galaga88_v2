@@ -21,8 +21,9 @@ Texture2D player_sprite;
 Texture2D shot_sprite;
 Texture2D stage_indicator;
 Texture2D zakko_sprite;
-Texture2D zakko_frame1;
-Texture2D zakko_frame2;
+//Texture2D zakko_frame1;
+//Texture2D zakko_frame2;
+Texture2D goei_sprite;
 Texture2D enemy_explosion;
 
 Texture2D win_screen;
@@ -74,8 +75,9 @@ void LoadGame() {
 	shot_sprite = LoadTexture("resources/Textures/entities/enemies/projectiles/disparoplayer.png");
 	stage_indicator = LoadTexture("resources/Textures/items/stage_indicator.png");
 	zakko_sprite = LoadTexture("resources/Textures/entities/enemies/zako_dim1.png");
-	zakko_frame1 = LoadTexture("resources/Textures/entities/enemies/zako_dim1_1.png");
-	zakko_frame2 = LoadTexture("resources/Textures/entities/enemies/zako_dim1_2.png");
+	//zakko_frame1 = LoadTexture("resources/Textures/entities/enemies/zako_dim1_1.png");
+	//zakko_frame2 = LoadTexture("resources/Textures/entities/enemies/zako_dim1_2.png");
+	goei_sprite = LoadTexture("resources/Textures/entities/enemies/goei_dim1.png");
 	enemy_explosion = LoadTexture("resources/Textures/entities/player/explosion.png");
 
 	win_screen = LoadTexture("resources/Textures/UI/win_condition.png");
@@ -129,8 +131,9 @@ void UnloadGame() {
 	UnloadTexture(shot_sprite);
 	UnloadTexture(stage_indicator);
 	UnloadTexture(zakko_sprite);
-	UnloadTexture(zakko_frame1);
-	UnloadTexture(zakko_frame2);
+	//UnloadTexture(zakko_frame1);
+	//UnloadTexture(zakko_frame2);
+	UnloadTexture(goei_sprite);
 	UnloadTexture(enemy_explosion);
 
 	UnloadTexture(win_screen);

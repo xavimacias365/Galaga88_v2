@@ -48,6 +48,7 @@ LightningState lstate = NUMBER;
 MainMenuEnemy enemy;
 MainMenuLightning lightning;
 vector<Zakko> zakkos;
+vector<Goei> goeis;
 Player player;
 vector<PlayerShot> shot;
 
@@ -120,13 +121,17 @@ void InitGame() {
 	lightning = MainMenuLightning({ 20 + 200, 70 - 200, 64, 64 }, { 5, 5 }, WHITE, true, 0, 0, 0, 0);
 
 	for (int i = 0; i < 10; ++i) {
-		zakkos.push_back(Zakko({ i * 64.0f, 100, 32, 32 }, { 1.0f, 0 }, WHITE, true, 0, 0, 0, 0));
+		zakkos.push_back(Zakko({ i * 64.0f, 400, 32, 32 }, { 1.0f, 0 }, WHITE, true, 0, 0, 0, 0));
+	}
+
+	for (int i = 0; i < 10; ++i) {
+		goeis.push_back(Goei({ i * 64.0f, 200, 32, 32 }, { 1.0f, 0 }, WHITE, true, 0, 0, 0, 0));
 	}
 
 	player = Player({ ((screenWidth - 48) / 2), screenHeight - (screenHeight / 10), 64, 64 }, { 5, 5 }, WHITE);
 	
 	for (int i = 0; i < 50; ++i) {
-		shot.push_back(PlayerShot({player.GetRec().x + player.GetRec().width / 2, player.GetRec().y, 5, 10}, {0, 10}, WHITE, false));
+		shot.push_back(PlayerShot({(player.GetRec().x + player.GetRec().width) / 2, player.GetRec().y, 5, 10}, {0, 10}, WHITE, false));
 	}
 
 // Player
@@ -226,7 +231,6 @@ void DrawGame() {
 		DrawTextureEx(main_menu_logo_lightning, { lightning.GetX(), lightning.GetY() }, 0.0f, fminf((800.0f / main_menu_logo.width), (400.0f / main_menu_logo.height)), WHITE);
 		DrawTextureEx(main_menu_enemy, { enemy.GetX(), enemy.GetY() }, 0.0f, (float)screenWidth / (float) main_menu_background.width, WHITE);
 
-		//DrawText((TextFormat("%04i ", lives), (screenWidth / 10 - MeasureText("%04i ", fontSize)))
 	}
 	else if (credits == true) {
 		DrawTextureEx(credits_screen, { 0, 0 }, 0.0f, ((float)screenWidth / credits_screen.width, (float)screenHeight / credits_screen.height), WHITE);
@@ -264,6 +268,14 @@ void DrawGame() {
 			}
 		}
 
+		// Draw Goei Enemies
+		for (const Goei& g : goeis) {
+			if (g.IsActive()) {
+				sourceRec = { 0.0f, g.GetCurrentFrame() * 16.0f, 16.0f, 16.0f };
+				DrawTexturePro(goei_sprite, sourceRec, Rectangle{ g.GetX(), g.GetY(), sourceRec.width * scale, sourceRec.height * scale }, { 0, 0 }, 0.0f, WHITE);
+			}
+		}
+
 		// Draw Player Shoots
 		for (const Shot& s : shot) {
 			if (s.IsActive()) {
@@ -276,6 +288,15 @@ void DrawGame() {
 	if (pause == true) {
 		DrawText("GAME PAUSED!", (screenWidth - MeasureText("GAME PAUSED!", fontSize)) / 2, screenHeight - 137, fontSize, RED);
 	}
+
+	// Lives, Score and High Score
+	DrawText((TextFormat("%i ", lives)), (screenWidth + MeasureText("%i", fontSize)) / 10, 25, fontSize, YELLOW);
+	DrawText("UP", (screenWidth + MeasureText("%i", fontSize)) / 10 + MeasureText("%i", fontSize), 25, fontSize, YELLOW);
+
+	DrawText((TextFormat("%02i ", score)), 50, 25 + MeasureText("%i", fontSize), fontSize, WHITE);
+
+	DrawText("HIGH SCORE", (screenWidth - MeasureText("HIGH SCORE", fontSize)) / 2, 25, fontSize, RED);
+	DrawText((TextFormat("%02i ", highscore)), (screenWidth - MeasureText("%02i", fontSize)) / 2, 25 + MeasureText("%i", fontSize), fontSize, WHITE);
 
 	// end the frame and get ready for the next one  (display frame, poll input, etc...)
 	EndDrawing();
@@ -411,6 +432,45 @@ void InGame() {
 
 		//#-------#
 
+		// Goei Movement
+		for (Goei& g : goeis) {
+			if (g.IsActive()) {
+				g.SetX(g.GetX() + g.GetSpeed().x);
+			}
+		}
+
+		// Goei Wall Collisions
+		float leftMostGoeiCol = screenWidth;
+		float rightMostGoeiCol = 0.0f;
+
+		// Find edges
+		for (Goei& g : goeis) {
+			if (g.IsActive()) {
+				if (g.GetX() < leftMostGoeiCol) { leftMostGoeiCol = g.GetX(); }
+				if (g.GetX() + g.GetRec().width > rightMostGoeiCol) { rightMostGoeiCol = g.GetX() + g.GetRec().width; }
+			}
+		}
+
+		// Check collision with walls
+		hitLeftWall = (leftMostGoeiCol <= 0);
+		hitRightWall = (rightMostGoeiCol >= screenWidth - 16);
+		if (hitLeftWall || hitRightWall) {
+			for (Goei& g : goeis) {
+				Vector2 speed = g.GetSpeed();
+				speed.x *= -1;
+				g.SetSpeed(speed);
+			}
+		}
+
+		// Goei Frame Animation
+		for (Goei& g : goeis) {
+			if (g.IsActive()) {
+				g.UpdateAnimation(2, 20);
+			}
+		}
+
+		//#-------#
+
 		// Shot Behaviour
 		for (Shot& s : shot) {
 			if (s.IsActive()) {
@@ -427,6 +487,22 @@ void InGame() {
 
 					// Score
 						score += 100;
+						if (score > highscore) {
+							highscore = score;
+						}
+					}
+				}
+			}
+
+			for (Goei& g : goeis) {
+				if (g.IsActive() && s.IsActive()) {
+					if (CheckCollisionRecs(s.GetRec(), g.GetRec())) {
+						s.ChangeState(false);
+						g.ChangeState(false);
+						PlaySound(enemy_killed);
+
+						// Score
+						score += 50;
 						if (score > highscore) {
 							highscore = score;
 						}

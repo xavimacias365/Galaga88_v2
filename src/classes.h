@@ -103,6 +103,24 @@ public:
 	Zakko(Rectangle rec, Vector2 speed, Color color, bool active, int move, int cnt, int frameCounter, int currentFrame) : Enemy(rec, speed, color, active, move, cnt, frameCounter, currentFrame) {}
 };
 
+class Goei : public Enemy {
+public:
+	Goei() {}
+	Goei(Rectangle rec, Vector2 speed, Color color, bool active, int move, int cnt, int frameCounter, int currentFrame) : Enemy(rec, speed, color, active, move, cnt, frameCounter, currentFrame) {}
+};
+
+class Don : public Enemy {
+public:
+	Don() {}
+	Don(Rectangle rec, Vector2 speed, Color color, bool active, int move, int cnt, int frameCounter, int currentFrame) : Enemy(rec, speed, color, active, move, cnt, frameCounter, currentFrame) {}
+};
+
+class BossGalaga : public Enemy {
+public:
+	BossGalaga() {}
+	BossGalaga(Rectangle rec, Vector2 speed, Color color, bool active, int move, int cnt, int frameCounter, int currentFrame) : Enemy(rec, speed, color, active, move, cnt, frameCounter, currentFrame) {}
+};
+
 // --- Enemy Manager ---
 class EnemyManager {
 	// TO DO: Spawn and Manage all enemies.
