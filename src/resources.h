@@ -24,8 +24,9 @@ extern Texture2D player_sprite;
 extern Texture2D shot_sprite;
 extern Texture2D stage_indicator;
 extern Texture2D zakko_sprite;
-extern Texture2D zakko_frame1;
-extern Texture2D zakko_frame2;
+//extern Texture2D zakko_frame1;
+//extern Texture2D zakko_frame2;
+extern Texture2D goei_sprite;
 extern Texture2D enemy_explosion;
 
 extern Texture2D win_screen;
