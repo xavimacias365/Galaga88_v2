@@ -269,7 +269,12 @@ void DrawGame() {
 		// Draw Player Shoots
 		for (const Shot& s : shot) {
 			if (s.IsActive()) {
+<<<<<<< Updated upstream
 				DrawTexturePro(shot_sprite, sourceRec, Rectangle{ s.GetX(), s.GetY(), sourceRec.width * scale, sourceRec.height * scale }, { 0, 0 }, 0.0f, WHITE);
+=======
+				//DrawTexturePro(shot_sprite, sourceRec, Rectangle{ s.GetX(), s.GetY(), sourceRec.width * scale, sourceRec.height * scale }, { 0, 0 }, 0.0f, WHITE);
+				DrawTextureEx(shot_sprite, { s.GetX()-29.0f, s.GetY()-38.0f }, 0.0f, scale, WHITE);
+>>>>>>> Stashed changes
 			}
 		}
 	}
