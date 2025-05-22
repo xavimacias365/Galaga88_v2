@@ -22,6 +22,7 @@ extern Texture2D level1_background;
 extern Texture2D level3_background;
 extern Texture2D player_sprite;
 extern Texture2D shot_sprite;
+extern Texture2D zakko_shot_sprite;
 extern Texture2D stage_indicator;
 extern Texture2D zakko_sprite;
 //extern Texture2D zakko_frame1;

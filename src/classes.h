@@ -6,12 +6,12 @@
 
 // --- Base Game Class ---
 class Game {
-	// TO DO: Add game loop control and scene management.
+	// Aqui deberia de estar las variables globales. Creo que en este punto del desarrollo mover estas variables ahora sería perder el tiempo.
 };
 
 // --- Scene ---
 class Scene {
-	// TO DO: Manage TileMap, Player, Enemies, etc.
+	// Los mismo pero con las variables level1, MainMenu, level2, etc.
 };
 
 //class TileMap {};
@@ -56,14 +56,13 @@ public:
 class Enemy : public Entity {
 protected:
 	bool active = false;
-	int move = 0;
-	int cnt = 0;
+	int shot = 0;
 	int frameCounter = 0;
 	int currentFrame = 0;
 
 public:
 	Enemy() {}
-	Enemy(Rectangle rec, Vector2 speed, Color color, bool active, int move, int cnt, int frameCounter, int currentFrame) : Entity(rec, speed, color), active(active), move(move), cnt(cnt), frameCounter(frameCounter), currentFrame(currentFrame) {}
+	Enemy(Rectangle rec, Vector2 speed, Color color, bool active, int shot, int frameCounter, int currentFrame) : Entity(rec, speed, color), active(active), shot(shot), frameCounter(frameCounter), currentFrame(currentFrame) {}
 
 	bool IsActive() const { return active; }
 
@@ -82,43 +81,46 @@ public:
 
 	void ChangeState(bool a) { active = a; }
 
+	void SetShot(int s) { shot = s; }
+	int GetShot() { return shot; }
+
 };
 
 // --- Enemies ---
 class MainMenuEnemy : public Enemy {
 public:
 	MainMenuEnemy() {}
-	MainMenuEnemy(Rectangle rec, Vector2 speed, Color color, bool active, int move, int cnt, int frameCounter, int currentFrame) : Enemy(rec, speed, color, active, move, cnt, frameCounter, currentFrame) {}
+	MainMenuEnemy(Rectangle rec, Vector2 speed, Color color, bool active, int shot, int frameCounter, int currentFrame) : Enemy(rec, speed, color, active, shot, frameCounter, currentFrame) {}
 };
 
 class MainMenuLightning : public Enemy {
 public:
 	MainMenuLightning() {}
-	MainMenuLightning(Rectangle rec, Vector2 speed, Color color, bool active, int move, int cnt, int frameCounter, int currentFrame) : Enemy(rec, speed, color, active, move, cnt, frameCounter, currentFrame) {}
+	MainMenuLightning(Rectangle rec, Vector2 speed, Color color, bool active, int shot, int frameCounter, int currentFrame) : Enemy(rec, speed, color, active, shot, frameCounter, currentFrame) {}
 };
 
 class Zakko : public Enemy {
 public:
 	Zakko() {}
-	Zakko(Rectangle rec, Vector2 speed, Color color, bool active, int move, int cnt, int frameCounter, int currentFrame) : Enemy(rec, speed, color, active, move, cnt, frameCounter, currentFrame) {}
+	Zakko(Rectangle rec, Vector2 speed, Color color, bool active, int shot, int frameCounter, int currentFrame) : Enemy(rec, speed, color, active, shot, frameCounter, currentFrame) {}
 };
 
 class Goei : public Enemy {
 public:
 	Goei() {}
-	Goei(Rectangle rec, Vector2 speed, Color color, bool active, int move, int cnt, int frameCounter, int currentFrame) : Enemy(rec, speed, color, active, move, cnt, frameCounter, currentFrame) {}
+	Goei(Rectangle rec, Vector2 speed, Color color, bool active, int shot, int frameCounter, int currentFrame) : Enemy(rec, speed, color, active, shot, frameCounter, currentFrame) {}
 };
 
 class Don : public Enemy {
 public:
 	Don() {}
-	Don(Rectangle rec, Vector2 speed, Color color, bool active, int move, int cnt, int frameCounter, int currentFrame) : Enemy(rec, speed, color, active, move, cnt, frameCounter, currentFrame) {}
+	Don(Rectangle rec, Vector2 speed, Color color, bool active, int shot, int frameCounter, int currentFrame) : Enemy(rec, speed, color, active, shot, frameCounter, currentFrame) {}
 };
 
 class BossGalaga : public Enemy {
 public:
 	BossGalaga() {}
-	BossGalaga(Rectangle rec, Vector2 speed, Color color, bool active, int move, int cnt, int frameCounter, int currentFrame) : Enemy(rec, speed, color, active, move, cnt, frameCounter, currentFrame) {}
+	BossGalaga(Rectangle rec, Vector2 speed, Color color, bool active, int shot, int frameCounter, int currentFrame) : Enemy(rec, speed, color, active, shot, frameCounter, currentFrame) {}
 };
 
 // --- Enemy Manager ---
@@ -149,9 +151,31 @@ public:
 
 // --- Enemy Shot ---
 class EnemyShot : public Shot {
+protected:
+	bool active = false;
+	int frameCounter = 0;
+	int currentFrame = 0;
+
 public:
 	EnemyShot() {}
-	EnemyShot(Rectangle rec, Vector2 speed, Color color, bool active) : Shot(rec, speed, color, active) {}
+	EnemyShot(Rectangle rec, Vector2 speed, Color color, bool active, int frameCounter, int currentFrame) : Shot(rec, speed, color, active), frameCounter(frameCounter), currentFrame(currentFrame) {}
+
+	bool IsActive() const { return active; }
+	void ChangeState(bool a) { active = a; }
+
+	void UpdateAnimation(int maxFrames, int frameSpeed) {
+		frameCounter++;
+		if (frameCounter >= frameSpeed) {
+			frameCounter = 0;
+			currentFrame++;
+			if (currentFrame >= maxFrames) {
+				currentFrame = 0;
+			}
+		}
+	}
+
+	int GetCurrentFrame() const { return currentFrame; }
+
 };
 
 // --- Player Shot ---

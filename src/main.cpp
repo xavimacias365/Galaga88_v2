@@ -51,6 +51,7 @@ vector<Zakko> zakkos;
 vector<Goei> goeis;
 Player player;
 vector<PlayerShot> shot;
+vector<EnemyShot> eshot;
 
 // functions
 void LoadGame();
@@ -80,6 +81,7 @@ int main () {
 	// Utility function from resource_dir.h to find the resources folder and set it as the current working directory so we can load from it
 	SearchAndSetResourceDir("resources");
 
+	srand(time(NULL));
 //	Texture wabbit = LoadTexture("wabbit_alpha.png");
 
 	// game loop
@@ -117,21 +119,25 @@ void InitGame() {
 
 	main_menu_text_start = "TO START PRESS < ENTER >!";
 
-	enemy = MainMenuEnemy({ 0, 555, 64, 64 }, { 5, 0 }, WHITE, true, 0, 0, 0, 0);
-	lightning = MainMenuLightning({ 20 + 200, 70 - 200, 64, 64 }, { 5, 5 }, WHITE, true, 0, 0, 0, 0);
+	enemy = MainMenuEnemy({ 0, 555, 64, 64 }, { 5, 0 }, WHITE, true, 0, 0, 0);
+	lightning = MainMenuLightning({ 20 + 200, 70 - 200, 64, 64 }, { 5, 5 }, WHITE, true, 0, 0, 0);
 
 	for (int i = 0; i < 10; ++i) {
-		zakkos.push_back(Zakko({ i * 64.0f, 400, 32, 32 }, { 1.0f, 0 }, WHITE, true, 0, 0, 0, 0));
+		zakkos.push_back(Zakko({ i * 64.0f, 400, 32, 32 }, { 1.0f, 0 }, WHITE, true, 0, 0, 0));
 	}
 
 	for (int i = 0; i < 10; ++i) {
-		goeis.push_back(Goei({ i * 64.0f, 200, 32, 32 }, { 1.0f, 0 }, WHITE, true, 0, 0, 0, 0));
+		goeis.push_back(Goei({ i * 64.0f, 200, 32, 32 }, { 1.0f, 0 }, WHITE, true, 0, 0, 0));
 	}
 
 	player = Player({ ((screenWidth - 48) / 2), screenHeight - (screenHeight / 10), 64, 64 }, { 5, 5 }, WHITE);
 	
 	for (int i = 0; i < 50; ++i) {
 		shot.push_back(PlayerShot({(player.GetRec().x + player.GetRec().width) / 2, player.GetRec().y, 5, 10}, {0, 10}, WHITE, false));
+	}
+
+	for (int i = 0; i < 50; ++i) {
+		eshot.push_back(EnemyShot({ (enemy.GetRec().x + enemy.GetRec().width) / 2, enemy.GetRec().y, 5, 10 }, { 0, 10 }, WHITE, false, 0, 0));
 	}
 
 // Player
@@ -283,6 +289,14 @@ void DrawGame() {
 				DrawTextureEx(shot_sprite, { s.GetX()-29.0f, s.GetY()-32.0f }, 0.0f, scale, WHITE);
 			}
 		}
+
+		// Draw Enemy Shoots
+		for (const EnemyShot& es : eshot) {
+			if (es.IsActive()) {
+				sourceRec = { 0.0f, es.GetCurrentFrame() * 16.0f, 16.0f, 16.0f };
+				DrawTexturePro(zakko_shot_sprite, sourceRec, Rectangle{ es.GetX(), es.GetY(), sourceRec.width * scale, sourceRec.height * scale }, { 0, 0 }, 0.0f, WHITE);
+			}
+		}
 	}
 
 	if (pause == true) {
@@ -391,6 +405,12 @@ void InGame() {
 			}
 		}
 
+		// Player Death
+		if (lives == 0) {
+			gameOver == true;
+			inGame == false;
+		}
+
 	//#-------#
 
 		// Zakko Movement
@@ -427,6 +447,32 @@ void InGame() {
 		for (Zakko& z : zakkos) {
 			if (z.IsActive()) {
 				z.UpdateAnimation(2, 20);
+			}
+		}
+
+		// Zakko Shooting
+		for (Zakko& z : zakkos) {
+			if (z.IsActive()) {
+				z.SetShot(rand() % 100);
+
+				if (z.GetShot() == 1) {
+					for (EnemyShot& es : eshot) {
+						if (!es.IsActive()) {
+							es.SetX((z.GetX() + z.GetRec().width / 2) - 3);
+							es.SetY(z.GetY());
+							es.ChangeState(true);
+							PlaySound(enemy_shot);
+							break;
+						}
+					}
+				}
+			}
+		}
+
+		// Zakko Shot Frame Animation
+		for (EnemyShot& es : eshot) {
+			if (es.IsActive()) {
+				es.UpdateAnimation(2, 20);
 			}
 		}
 
@@ -517,6 +563,27 @@ void InGame() {
 		}
 
 		//#-------#
+
+		// Enemy Shot Behaviour
+		for (EnemyShot& es : eshot) {
+			if (es.IsActive()) {
+				es.SetY(es.GetY() + es.GetSpeed().y);
+			}
+
+			// Colision with Player
+			if (es.IsActive()) {
+				if (CheckCollisionRecs(es.GetRec(), player.GetRec())) {
+					es.ChangeState(false);
+					lives -= 1;
+					PlaySound(enemy_killed);
+				}
+			}
+
+			// Despawn shot
+			if (es.GetY() > screenHeight) {
+				es.ChangeState(false);
+			}
+		}
 
 	}
 }

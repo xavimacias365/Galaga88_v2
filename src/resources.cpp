@@ -19,6 +19,7 @@ Texture2D level1_background;
 Texture2D level3_background;
 Texture2D player_sprite;
 Texture2D shot_sprite;
+Texture2D zakko_shot_sprite;
 Texture2D stage_indicator;
 Texture2D zakko_sprite;
 //Texture2D zakko_frame1;
@@ -73,6 +74,7 @@ void LoadGame() {
 	level3_background = LoadTexture("resources/Textures/level-background/stage3.png");
 	player_sprite = LoadTexture("resources/Textures/entities/player/fighter.png");
 	shot_sprite = LoadTexture("resources/Textures/entities/enemies/projectiles/disparoplayer.png");
+	zakko_shot_sprite = LoadTexture("resources/Textures/entities/enemies/projectiles/zako_dim1_shot.png");
 	stage_indicator = LoadTexture("resources/Textures/items/stage_indicator.png");
 	zakko_sprite = LoadTexture("resources/Textures/entities/enemies/zako_dim1.png");
 	//zakko_frame1 = LoadTexture("resources/Textures/entities/enemies/zako_dim1_1.png");
@@ -129,6 +131,7 @@ void UnloadGame() {
 	UnloadTexture(level3_background);
 	UnloadTexture(player_sprite);
 	UnloadTexture(shot_sprite);
+	UnloadTexture(zakko_shot_sprite);
 	UnloadTexture(stage_indicator);
 	UnloadTexture(zakko_sprite);
 	//UnloadTexture(zakko_frame1);
