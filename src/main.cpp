@@ -21,7 +21,7 @@ using namespace std;
 #define screenHeight 1080
 #define fontSize 37
 
-// global variables
+// Global variables
 bool gameOver;
 bool pause;
 bool victory;
@@ -31,6 +31,8 @@ bool launchSequence;
 bool inGame;
 enum LevelStage { LEVEL1, LEVEL2 };
 LevelStage level = LEVEL1;
+
+bool showCollisions;
 
 int score;
 int highscore;
@@ -48,6 +50,7 @@ LightningState lstate = NUMBER;
 MainMenuEnemy enemy;
 MainMenuLightning lightning;
 vector<Zakko> zakkos;
+vector<Don> dons;
 vector<Goei> goeis;
 Player player;
 vector<PlayerShot> shot;
@@ -65,6 +68,14 @@ void MainMenu();
 void Credits();
 void LaunchSequence();
 void InGame();
+void GameOver();
+void Victory();
+void Restart();
+
+void level1();
+void level2();
+
+void GameCheats();
 
 int main () {
 	// Tell the window to use vsync and work on high DPI displays
@@ -82,17 +93,12 @@ int main () {
 	SearchAndSetResourceDir("resources");
 
 	srand(time(NULL));
-//	Texture wabbit = LoadTexture("wabbit_alpha.png");
 
 	// game loop
 	while (!WindowShouldClose())		// run the loop untill the user presses ESCAPE or presses the Close button on the window
 	{
 		UpdateDrawFrame();
 	}
-
-	// cleanup
-	// unload our texture so it can be cleaned up
-//	UnloadTexture(wabbit);
 
 	// destroy the window and cleanup the OpenGL context
 	CloseWindow();
@@ -101,7 +107,7 @@ int main () {
 
 void InitGame() {
 
-	// global variables
+	// Global variables Default
 	gameOver = false;
 	pause = false;
 	victory = false;
@@ -109,6 +115,8 @@ void InitGame() {
 	credits = false;
 	launchSequence = false;
 	inGame = false;
+
+	showCollisions = false;
 
 	score = 0;
 	lives = 1;
@@ -120,31 +128,11 @@ void InitGame() {
 	main_menu_text_start = "TO START PRESS < ENTER >!";
 
 	enemy = MainMenuEnemy({ 0, 555, 64, 64 }, { 5, 0 }, WHITE, true, 0, 0, 0);
-	lightning = MainMenuLightning({ 20 + 200, 70 - 200, 64, 64 }, { 5, 5 }, WHITE, true, 0, 0, 0);
+	lightning = MainMenuLightning({ 20 + 220, 70 - 220, 64, 64 }, { 5, 5 }, WHITE, true, 0, 0, 0);
 
-	for (int i = 0; i < 10; ++i) {
-		zakkos.push_back(Zakko({ i * 64.0f, 400, 32, 32 }, { 1.0f, 0 }, WHITE, true, 0, 0, 0));
-	}
+	player = Player({ ((screenWidth - 50) / 2), screenHeight - (screenHeight / 10), 64, 64 }, { 5, 5 }, WHITE);
 
-	for (int i = 0; i < 10; ++i) {
-		goeis.push_back(Goei({ i * 64.0f, 200, 32, 32 }, { 1.0f, 0 }, WHITE, true, 0, 0, 0));
-	}
-
-	player = Player({ ((screenWidth - 48) / 2), screenHeight - (screenHeight / 10), 64, 64 }, { 5, 5 }, WHITE);
-	
-	for (int i = 0; i < 50; ++i) {
-		shot.push_back(PlayerShot({(player.GetRec().x + player.GetRec().width) / 2, player.GetRec().y, 5, 10}, {0, 10}, WHITE, false));
-	}
-
-	for (int i = 0; i < 50; ++i) {
-		eshot.push_back(EnemyShot({ (enemy.GetRec().x + enemy.GetRec().width) / 2, enemy.GetRec().y, 5, 10 }, { 0, 10 }, WHITE, false, 0, 0));
-	}
-
-// Player
-	Player player;
-	player.SetX(420);
-	player.SetY(900);
-
+	level1();
 }
 
 void UpdateGame() {
@@ -160,6 +148,14 @@ void UpdateGame() {
 	else if (inGame == true) {
 		InGame();
 	}
+	else if (gameOver == true) {
+		GameOver();
+	}
+	else if (victory == true) {
+		Victory();
+	}
+
+	GameCheats();
 }
 
 void DrawGame() {
@@ -168,15 +164,6 @@ void DrawGame() {
 	BeginDrawing();
 	// Setup the back buffer for drawing (clear color and depth buffers)
 	ClearBackground(BLACK);
-
-	// Load a texture from the resources directory
-//	Texture wabbit = LoadTexture("wabbit_alpha.png");
-
-	// draw some text using the default font
-//	DrawText("Hello Raylib", 200, 200, 20, WHITE);
-
-	// draw our texture to the screen
-//	DrawTexture(wabbit, 400, 200, WHITE);
 
 // Draw Main Menu
  	// CENTER IMG FORMULA -> (screenWidth - myImage.width) / 2
@@ -235,7 +222,7 @@ void DrawGame() {
 		DrawTextureEx(main_menu_namco, { ((screenWidth - main_menu_namco.width) / 2.0f), screenHeight - (screenHeight / 10) }, 0.0f, (main_menu_namco.width / 32, main_menu_namco.height / 32), WHITE);
 
 		DrawTextureEx(main_menu_logo_lightning, { lightning.GetX(), lightning.GetY() }, 0.0f, fminf((800.0f / main_menu_logo.width), (400.0f / main_menu_logo.height)), WHITE);
-		DrawTextureEx(main_menu_enemy, { enemy.GetX(), enemy.GetY() }, 0.0f, (float)screenWidth / (float) main_menu_background.width, WHITE);
+		DrawTexturePro(main_menu_enemy, sourceRec, enemy.GetRec(), { 0, 0 }, 0.0f, WHITE);
 
 	}
 	else if (credits == true) {
@@ -244,10 +231,10 @@ void DrawGame() {
 	}
 	else if (launchSequence == true) {
 		DrawTextureEx(launch_background, { 0,0 }, 0.0f, ((float)screenWidth / credits_screen.width, (float)screenHeight / credits_screen.height), WHITE);
+		DrawTexturePro(player_sprite, sourceRec, player.GetRec(), { 0, 0 }, 0.0f, WHITE);
 
-		DrawTextureEx(player_sprite, { player.GetX(), player.GetY() }, 0.0f, (float)screenWidth / (float)main_menu_background.width, WHITE);
 	}
-	else if (inGame == true && level == LEVEL1) {
+	else if (inGame == true || gameOver == true && level == LEVEL1) {
 
 		DrawTextureEx(level3_background, { 0, 0 }, 0.0f, ((float)screenWidth / credits_screen.width, (float)screenHeight / credits_screen.height), WHITE);
 
@@ -264,13 +251,13 @@ void DrawGame() {
 		}
 		
 		// Draw Player
-		DrawTextureEx(player_sprite, { player.GetX(), player.GetY() }, 0.0f, (float)screenWidth / (float)main_menu_background.width, WHITE);
+		DrawTexturePro(player_sprite, sourceRec, player.GetRec(), { 0, 0 }, 0.0f, WHITE);
 
 		// Draw Zakko Enemies
 		for (const Zakko& z : zakkos) {
 			if (z.IsActive()) {
 				sourceRec = { 0.0f, z.GetCurrentFrame() * 16.0f, 16.0f, 16.0f };
-				DrawTexturePro(zakko_sprite, sourceRec, Rectangle { z.GetX(), z.GetY(), sourceRec.width * scale, sourceRec.height * scale }, { 0, 0 }, 0.0f, WHITE);
+				DrawTexturePro(zakko_sprite, sourceRec, z.GetRec(), { 0, 0 }, 0.0f, WHITE);
 			}
 		}
 
@@ -278,15 +265,29 @@ void DrawGame() {
 		for (const Goei& g : goeis) {
 			if (g.IsActive()) {
 				sourceRec = { 0.0f, g.GetCurrentFrame() * 16.0f, 16.0f, 16.0f };
-				DrawTexturePro(goei_sprite, sourceRec, Rectangle{ g.GetX(), g.GetY(), sourceRec.width * scale, sourceRec.height * scale }, { 0, 0 }, 0.0f, WHITE);
+				DrawTexturePro(goei_sprite, sourceRec, g.GetRec(), { 0, 0 }, 0.0f, WHITE);
+			}
+		}
+
+		// Draw Don Enemies
+		for (const Don& d : dons) {
+			if (d.IsActive()) {
+				sourceRec = { 0.0f, d.GetCurrentFrame() * 16.0f, 16.0f, 16.0f };
+				switch (d.GetVariant()) {
+					case 0: DrawTexturePro(don1_sprite, sourceRec, d.GetRec(), { 0, 0 }, 0.0f, WHITE); break;
+					case 1: DrawTexturePro(don2_sprite, sourceRec, d.GetRec(), { 0, 0 }, 0.0f, WHITE); break;
+					case 2:	DrawTexturePro(don3_sprite, sourceRec, d.GetRec(), { 0, 0 }, 0.0f, WHITE); break;
+					case 3:	DrawTexturePro(don4_sprite, sourceRec, d.GetRec(), { 0, 0 }, 0.0f, WHITE); break;
+				}
 			}
 		}
 
 		// Draw Player Shoots
 		for (const Shot& s : shot) {
 			if (s.IsActive()) {
-				//DrawTexturePro(shot_sprite, sourceRec, Rectangle{ s.GetX(), s.GetY(), sourceRec.width * scale, sourceRec.height * scale }, { 0, 0 }, 0.0f, WHITE);
-				DrawTextureEx(shot_sprite, { s.GetX()-29.0f, s.GetY()-32.0f }, 0.0f, scale, WHITE);
+				sourceRec = { 0.0f, 0.0f, 16.0f,  16.0f };
+				Rectangle dest = { s.GetX() - (sourceRec.width * scale - s.GetRec().width) / 2, s.GetY() - (sourceRec.height * scale - s.GetRec().height) / 2, sourceRec.width * scale, sourceRec.height * scale };
+				DrawTexturePro(shot_sprite, sourceRec, dest, { 0, 0 }, 0.0f, WHITE);
 			}
 		}
 
@@ -294,13 +295,104 @@ void DrawGame() {
 		for (const EnemyShot& es : eshot) {
 			if (es.IsActive()) {
 				sourceRec = { 0.0f, es.GetCurrentFrame() * 16.0f, 16.0f, 16.0f };
-				DrawTexturePro(zakko_shot_sprite, sourceRec, Rectangle{ es.GetX(), es.GetY(), sourceRec.width * scale, sourceRec.height * scale }, { 0, 0 }, 0.0f, WHITE);
+				Rectangle dest = { es.GetX() - (sourceRec.width * scale - es.GetRec().width) / 2, es.GetY() - (sourceRec.height * scale - es.GetRec().height) / 2, sourceRec.width * scale, sourceRec.height * scale };
+				DrawTexturePro(zakko_shot_sprite, sourceRec, dest, { 0, 0 }, 0.0f, WHITE);
 			}
 		}
 	}
 
+	if (gameOver == true) {
+		DrawText("GAME OVER!", (screenWidth - MeasureText("GAME OVER!", fontSize)) / 2, (screenHeight / 2) - fontSize, fontSize, RED);
+		DrawText("PRESS [ENTER] TO PLAY AGAIN", (screenWidth - MeasureText("PRESS [ENTER] TO PLAY AGAIN", fontSize)) / 2, (screenHeight / 2) + fontSize, fontSize, RED);
+	}
+
+	if (victory == true) {
+		DrawTextureEx(win_screen, { 0, 0 }, 0.0f, ((float)screenWidth / credits_screen.width, (float)screenHeight / credits_screen.height), WHITE);
+		DrawText("PRESS [ENTER] TO PLAY AGAIN", (screenWidth - MeasureText("PRESS [ENTER] TO PLAY AGAIN", fontSize)) / 2, screenHeight - fontSize * 2, fontSize, RED);
+	}
+
 	if (pause == true) {
 		DrawText("GAME PAUSED!", (screenWidth - MeasureText("GAME PAUSED!", fontSize)) / 2, screenHeight - 137, fontSize, RED);
+	}
+
+	if (showCollisions == true) {
+		if (main_menu == true) {
+			DrawRectangleLines(
+				(int)lightning.GetRec().x,
+				(int)lightning.GetRec().y,
+				(int)lightning.GetRec().width,
+				(int)lightning.GetRec().height,
+				PURPLE
+			);
+
+			DrawRectangleLines(
+				(int)enemy.GetRec().x,
+				(int)enemy.GetRec().y,
+				(int)enemy.GetRec().width,
+				(int)enemy.GetRec().height,
+				DARKGREEN
+			);
+		}
+		if (launchSequence == true || inGame == true) {
+			DrawRectangleLines(
+				(int)player.GetRec().x,
+				(int)player.GetRec().y,
+				(int)player.GetRec().width,
+				(int)player.GetRec().height,
+				BLUE
+			);
+		}
+		if (inGame == true || gameOver == true) {
+			for (const Zakko& z : zakkos) {
+				DrawRectangleLines(
+					(int)z.GetRec().x,
+					(int)z.GetRec().y,
+					(int)z.GetRec().width,
+					(int)z.GetRec().height,
+					RED
+				);
+			}
+
+			for (const Goei& g : goeis) {
+				DrawRectangleLines(
+					(int)g.GetRec().x,
+					(int)g.GetRec().y,
+					(int)g.GetRec().width,
+					(int)g.GetRec().height,
+					GREEN
+				);
+			}
+
+			for (const Don& d : dons) {
+				DrawRectangleLines(
+					(int)d.GetRec().x,
+					(int)d.GetRec().y,
+					(int)d.GetRec().width,
+					(int)d.GetRec().height,
+					PINK
+				);
+			}
+
+			for (const Shot& s : shot) {
+				DrawRectangleLines(
+					(int)s.GetRec().x,
+					(int)s.GetRec().y,
+					(int)s.GetRec().width,
+					(int)s.GetRec().height,
+					BLUE
+				);
+			}
+
+			for (const EnemyShot& es : eshot) {
+				DrawRectangleLines(
+					(int)es.GetRec().x,
+					(int)es.GetRec().y,
+					(int)es.GetRec().width,
+					(int)es.GetRec().height,
+					RED
+				);
+			}
+		}
 	}
 
 	// Lives, Score and High Score
@@ -373,7 +465,7 @@ void LaunchSequence() {
 		player.SetY(player.GetY() - player.GetSpeed().y);
 	}
 	
-	if (IsKeyPressed(KEY_ENTER) || player.GetY() <= -screenHeight) {
+	if (IsKeyPressed(KEY_ENTER) || player.GetY() <= -screenHeight  / 2) {
 		launchSequence = false;
 		inGame = true;
 		player.SetY(screenHeight - (screenHeight / 5));
@@ -407,8 +499,8 @@ void InGame() {
 
 		// Player Death
 		if (lives == 0) {
-			gameOver == true;
-			inGame == false;
+			gameOver = true;
+			inGame = false;
 		}
 
 	//#-------#
@@ -517,6 +609,45 @@ void InGame() {
 
 		//#-------#
 
+		// Don Movement
+		for (Don& d : dons) {
+			if (d.IsActive()) {
+				d.SetX(d.GetX() + d.GetSpeed().x);
+			}
+		}
+
+		// Don Wall Collisions
+		float leftMostDonCol = screenWidth;
+		float rightMostDonCol = 0.0f;
+
+		// Find edges
+		for (Don& d : dons) {
+			if (d.IsActive()) {
+				if (d.GetX() < leftMostDonCol) { leftMostDonCol = d.GetX(); }
+				if (d.GetX() + d.GetRec().width > rightMostDonCol) { rightMostDonCol = d.GetX() + d.GetRec().width; }
+			}
+		}
+
+		// Check collision with walls
+		hitLeftWall = (leftMostDonCol <= 0);
+		hitRightWall = (rightMostDonCol >= screenWidth - 16);
+		if (hitLeftWall || hitRightWall) {
+			for (Don& d : dons) {
+				Vector2 speed = d.GetSpeed();
+				speed.x *= -1;
+				d.SetSpeed(speed);
+			}
+		}
+
+		// Don Frame Animation
+		for (Don& d : dons) {
+			if (d.IsActive()) {
+				d.UpdateAnimation(2, 20);
+			}
+		}
+
+		//#-------#
+
 		// Shot Behaviour
 		for (Shot& s : shot) {
 			if (s.IsActive()) {
@@ -556,6 +687,22 @@ void InGame() {
 				}
 			}
 
+			for (Don& d : dons) {
+				if (d.IsActive() && s.IsActive()) {
+					if (CheckCollisionRecs(s.GetRec(), d.GetRec())) {
+						s.ChangeState(false);
+						d.ChangeState(false);
+						PlaySound(enemy_killed);
+
+						// Score
+						score += 50;
+						if (score > highscore) {
+							highscore = score;
+						}
+					}
+				}
+			}
+
 		// Despawn shot
 			if (s.GetY() < 0) {
 				s.ChangeState(false);
@@ -570,12 +717,14 @@ void InGame() {
 				es.SetY(es.GetY() + es.GetSpeed().y);
 			}
 
-			// Colision with Player
+			// Colision with Player (death)
 			if (es.IsActive()) {
 				if (CheckCollisionRecs(es.GetRec(), player.GetRec())) {
 					es.ChangeState(false);
 					lives -= 1;
-					PlaySound(enemy_killed);
+					PlaySound(fighter_killed);
+					PlayMusicStream(game_over_music);
+
 				}
 			}
 
@@ -585,5 +734,169 @@ void InGame() {
 			}
 		}
 
+		//#-------#
+
+		// Win Condition
+		if (score == 1500) {
+			inGame = false;
+			victory = true;
+			PlayMusicStream(victory_music);
+		}
+
+	}
+}
+
+void GameOver() {
+	UpdateMusicStream(game_over_music);
+	if (IsKeyPressed(KEY_ENTER)) {
+		gameOver = false;
+		lives += 1;
+		main_menu = true;
+
+		// Reset entities for next game
+		lightning.SetPos(20 + 220, 70 - 220);
+		lstate = NUMBER;
+		enemy.SetX(0);
+		player.SetX((screenWidth - 48) / 2);
+
+		for (Shot& s : shot) {
+			s.ChangeState(false);
+			s.SetPos(-100, -100);
+		}
+
+		for (EnemyShot& es : eshot) {
+			es.ChangeState(false);
+			es.SetPos(-100, -100);
+		}
+
+		score = 0;
+		Restart();
+
+	}
+}
+
+void Victory() {
+	UpdateMusicStream(victory_music);
+	if (IsKeyPressed(KEY_ENTER)) {
+		victory = false;
+		lives += 1;
+		main_menu = true;
+
+		// Reset entities for next game
+		lightning.SetPos(20 + 220, 70 - 220);
+		lstate = NUMBER;
+		enemy.SetX(0);
+		player.SetX((screenWidth - 48) / 2);
+
+		for (Shot& s : shot) {
+			s.ChangeState(false);
+			s.SetPos(-100, -100);
+		}
+
+		for (EnemyShot& es : eshot) {
+			es.ChangeState(false);
+			es.SetPos(-100, -100);
+		}
+
+		score = 0;
+		Restart();
+
+	}
+}
+
+void Restart() {
+	zakkos.clear();
+	goeis.clear();
+	dons.clear();
+	shot.clear();
+	eshot.clear();
+
+	level1();
+}
+
+void level1() {
+
+	player = Player({ ((screenWidth - 50) / 2), screenHeight - (screenHeight / 10), 64, 64 }, { 5, 5 }, WHITE);
+
+	for (int i = 0; i < 10; ++i) {
+		zakkos.push_back(Zakko({ i * 64.0f, 100, 64, 64 }, { 1.0f, 0 }, WHITE, true, 0, 0, 0));
+	}
+
+	for (int i = 0; i < 10; ++i) {
+		dons.push_back(Don({ i * 64.0f, 300, 64, 64 }, { 1.0f, 0 }, WHITE, true, 0, 0, 0));
+	}
+
+	for (int i = 0; i < 50; ++i) {
+		shot.push_back(PlayerShot({ (player.GetRec().x + player.GetRec().width) / 2, player.GetRec().y, 12, 24 }, { 0, 10 }, WHITE, false));
+	}
+
+	for (int i = 0; i < 50; ++i) {
+		eshot.push_back(EnemyShot({ (enemy.GetRec().x + enemy.GetRec().width) / 2, enemy.GetRec().y, 12, 24 }, { 0, 10 }, WHITE, false, 0, 0));
+	}
+}
+
+void level2() {
+
+	player = Player({ ((screenWidth - 50) / 2), screenHeight - (screenHeight / 10), 64, 64 }, { 5, 5 }, WHITE);
+
+	for (int i = 0; i < 10; ++i) {
+		goeis.push_back(Goei({ i * 64.0f, 200, 64, 64 }, { 1.0f, 0 }, WHITE, true, 0, 0, 0));
+	}
+
+}
+
+void GameCheats() {
+	if (IsKeyPressed(KEY_O)) {
+		showCollisions = !showCollisions;
+	}
+
+	if (IsKeyPressed(KEY_I)) {
+		lives += 1;
+	}
+
+	if (IsKeyPressed(KEY_ONE)) {
+		gameOver = false;
+		pause = false;
+		victory = false;
+		main_menu = true;
+		credits = false;
+		launchSequence = false;
+		inGame = false;
+	}
+	if (IsKeyPressed(KEY_TWO)) {
+		gameOver = false;
+		pause = false;
+		victory = false;
+		main_menu = false;
+		credits = true;
+		launchSequence = false;
+		inGame = false;
+	}
+	if (IsKeyPressed(KEY_THREE)) {
+		gameOver = false;
+		pause = false;
+		victory = false;
+		main_menu = false;
+		credits = false;
+		launchSequence = true;
+		inGame = false;
+	}
+	if (IsKeyPressed(KEY_FOUR)) {
+		gameOver = false;
+		pause = false;
+		victory = false;
+		main_menu = false;
+		credits = false;
+		launchSequence = false;
+		inGame = true;
+	}
+	if (IsKeyPressed(KEY_FIVE)) {
+		gameOver = true;
+		pause = false;
+		victory = false;
+		main_menu = false;
+		credits = false;
+		launchSequence = false;
+		inGame = false;
 	}
 }

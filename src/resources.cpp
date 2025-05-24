@@ -22,9 +22,15 @@ Texture2D shot_sprite;
 Texture2D zakko_shot_sprite;
 Texture2D stage_indicator;
 Texture2D zakko_sprite;
-//Texture2D zakko_frame1;
-//Texture2D zakko_frame2;
 Texture2D goei_sprite;
+Texture2D don1_sprite;
+Texture2D don2_sprite;
+Texture2D don3_sprite;
+Texture2D don4_sprite;
+Texture2D baby_don1_sprite;
+Texture2D baby_don2_sprite;
+Texture2D baby_don3_sprite;
+Texture2D baby_don4_sprite;
 Texture2D enemy_explosion;
 
 Texture2D win_screen;
@@ -77,9 +83,15 @@ void LoadGame() {
 	zakko_shot_sprite = LoadTexture("resources/Textures/entities/enemies/projectiles/zako_dim1_shot.png");
 	stage_indicator = LoadTexture("resources/Textures/items/stage_indicator.png");
 	zakko_sprite = LoadTexture("resources/Textures/entities/enemies/zako_dim1.png");
-	//zakko_frame1 = LoadTexture("resources/Textures/entities/enemies/zako_dim1_1.png");
-	//zakko_frame2 = LoadTexture("resources/Textures/entities/enemies/zako_dim1_2.png");
 	goei_sprite = LoadTexture("resources/Textures/entities/enemies/goei_dim1.png");
+	don1_sprite = LoadTexture("resources/Textures/entities/enemies/don1.png");
+	don2_sprite = LoadTexture("resources/Textures/entities/enemies/don2.png");
+	don3_sprite = LoadTexture("resources/Textures/entities/enemies/don3.png");
+	don4_sprite = LoadTexture("resources/Textures/entities/enemies/don4.png");
+	baby_don1_sprite = LoadTexture("resources/Textures/entities/enemies/don1_baby.png");
+	baby_don2_sprite = LoadTexture("resources/Textures/entities/enemies/don2_baby.png");
+	baby_don3_sprite = LoadTexture("resources/Textures/entities/enemies/don3_baby.png");
+	baby_don4_sprite = LoadTexture("resources/Textures/entities/enemies/don4_baby.png");
 	enemy_explosion = LoadTexture("resources/Textures/entities/player/explosion.png");
 
 	win_screen = LoadTexture("resources/Textures/UI/win_condition.png");
@@ -112,6 +124,8 @@ void LoadGame() {
 
 }
 
+// cleanup
+// unload our textures so it can be cleaned up
 void UnloadGame() {
 
 	UnloadTexture(main_menu_background);
@@ -134,9 +148,15 @@ void UnloadGame() {
 	UnloadTexture(zakko_shot_sprite);
 	UnloadTexture(stage_indicator);
 	UnloadTexture(zakko_sprite);
-	//UnloadTexture(zakko_frame1);
-	//UnloadTexture(zakko_frame2);
 	UnloadTexture(goei_sprite);
+	UnloadTexture(don1_sprite);
+	UnloadTexture(don2_sprite);
+	UnloadTexture(don3_sprite);
+	UnloadTexture(don4_sprite);
+	UnloadTexture(baby_don1_sprite);
+	UnloadTexture(baby_don2_sprite);
+	UnloadTexture(baby_don3_sprite);
+	UnloadTexture(baby_don4_sprite);
 	UnloadTexture(enemy_explosion);
 
 	UnloadTexture(win_screen);

@@ -112,9 +112,24 @@ public:
 };
 
 class Don : public Enemy {
+private:
+	int variant = 0;
+
 public:
 	Don() {}
-	Don(Rectangle rec, Vector2 speed, Color color, bool active, int shot, int frameCounter, int currentFrame) : Enemy(rec, speed, color, active, shot, frameCounter, currentFrame) {}
+	Don(Rectangle rec, Vector2 speed, Color color, bool active, int shot, int frameCounter, int currentFrame) : Enemy(rec, speed, color, active, shot, frameCounter, currentFrame) {
+		variant = rand() % 4;
+	}
+
+	int GetVariant() const { return variant; }
+	void SetVariant(int v) { variant = v; }
+
+};
+
+class BabyDon : public Enemy {
+public:
+	BabyDon() {}
+	BabyDon(Rectangle rec, Vector2 speed, Color color, bool active, int shot, int frameCounter, int currentFrame) : Enemy(rec, speed, color, active, shot, frameCounter, currentFrame) {}
 };
 
 class BossGalaga : public Enemy {

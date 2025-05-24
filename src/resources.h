@@ -28,6 +28,14 @@ extern Texture2D zakko_sprite;
 //extern Texture2D zakko_frame1;
 //extern Texture2D zakko_frame2;
 extern Texture2D goei_sprite;
+extern Texture2D don1_sprite;
+extern Texture2D don2_sprite;
+extern Texture2D don3_sprite;
+extern Texture2D don4_sprite;
+extern Texture2D baby_don1_sprite;
+extern Texture2D baby_don2_sprite;
+extern Texture2D baby_don3_sprite;
+extern Texture2D baby_don4_sprite;
 extern Texture2D enemy_explosion;
 
 extern Texture2D win_screen;
