@@ -46,9 +46,102 @@ public:
 
 // --- Player ---
 class Player : public Entity {
+protected:
+	bool active = false;
 public:
 	Player() {}
-	Player(Rectangle rec, Vector2 speed, Color color) : Entity(rec, speed, color) {}
+	Player(bool active ,Rectangle rec, Vector2 speed, Color color) : active(active) , Entity(rec, speed, color) {}
+
+	bool IsActive() const { return active; }
+	void ChangeState(bool a) { active = a; }
+
+};
+
+// --- Explosion ---
+class Explosion : public Entity {
+protected:
+	bool active = false;
+
+public:
+	Explosion() {}
+	Explosion(Rectangle rec, Vector2 speed, Color color, bool active) : Entity(rec, speed, color), active(active) {}
+
+	bool IsActive() const { return active; }
+	void ChangeState(bool a) { active = a; }
+
+};
+
+class EnemyExplosion : public Explosion {
+protected:
+	int frameCounter = 0;
+	int currentFrame = 0;
+
+public:
+	EnemyExplosion() {}
+	EnemyExplosion(Rectangle rec, Vector2 speed, Color color, bool active, int frameCounter, int currentFrame) : Explosion(rec, speed, color, active), frameCounter(frameCounter), currentFrame(currentFrame) {}
+
+	void UpdateAnimation(int maxFrames, int frameSpeed) {
+		if (!IsActive()) { return; }
+
+		frameCounter++;
+		if (frameCounter >= frameSpeed) {
+			frameCounter = 0;
+			currentFrame++;
+			if (currentFrame >= maxFrames) {
+				currentFrame = 0;
+				ChangeState(false);
+			}
+		}
+	}
+
+	void Activate(Vector2 pos, float width = 64, float height = 64) {
+		rec.x = pos.x;
+		rec.y = pos.y;
+		rec.width = width;
+		rec.height = height;
+		currentFrame = 0;
+		frameCounter = 0;
+		ChangeState(true);
+	}
+
+	int GetCurrentFrame() const { return currentFrame; }
+
+};
+
+class PlayerExplosion : public Explosion {
+protected:
+	int frameCounter = 0;
+	int currentFrame = 0;
+
+public:
+	PlayerExplosion() {}
+	PlayerExplosion(Rectangle rec, Vector2 speed, Color color, bool active, int frameCounter, int currentFrame) : Explosion(rec, speed, color, active), frameCounter(frameCounter), currentFrame(currentFrame) {}
+
+	void UpdateAnimation(int maxFrames, int frameSpeed) {
+		if (!IsActive()) { return; }
+
+		frameCounter++;
+		if (frameCounter >= frameSpeed) {
+			frameCounter = 0;
+			currentFrame++;
+			if (currentFrame >= maxFrames) {
+				currentFrame = 0;
+				ChangeState(false);
+			}
+		}
+	}
+
+	void Activate(Vector2 pos, float width = 64, float height = 64) {
+		rec.x = pos.x;
+		rec.y = pos.y;
+		rec.width = width;
+		rec.height = height;
+		currentFrame = 0;
+		frameCounter = 0;
+		ChangeState(true);
+	}
+
+	int GetCurrentFrame() const { return currentFrame; }
 
 };
 
@@ -80,6 +173,17 @@ public:
 	int GetCurrentFrame() const { return currentFrame; }
 
 	void ChangeState(bool a) { active = a; }
+	
+	void DetectChangeState(bool a) {
+		if (active && !a) {
+			OnDeactivate();
+		}
+		active = a;
+	}
+
+	void OnDeactivate() {
+
+	}
 
 	void SetShot(int s) { shot = s; }
 	int GetShot() { return shot; }

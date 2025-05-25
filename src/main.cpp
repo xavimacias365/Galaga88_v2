@@ -15,6 +15,10 @@ using namespace std;
 
 #include "classes.h"
 #include "resources.h"
+//#include "draw.h"
+#include "player.h"
+#include "enemies.h"
+#include "globals.h"
 
 // Defines
 #define screenWidth 840
@@ -55,6 +59,8 @@ vector<Goei> goeis;
 Player player;
 vector<PlayerShot> shot;
 vector<EnemyShot> eshot;
+vector<PlayerExplosion> explosion;
+vector<EnemyExplosion> eexplosion;
 
 // functions
 void LoadGame();
@@ -130,7 +136,7 @@ void InitGame() {
 	enemy = MainMenuEnemy({ 0, 555, 64, 64 }, { 5, 0 }, WHITE, true, 0, 0, 0);
 	lightning = MainMenuLightning({ 20 + 220, 70 - 220, 64, 64 }, { 5, 5 }, WHITE, true, 0, 0, 0);
 
-	player = Player({ ((screenWidth - 50) / 2), screenHeight - (screenHeight / 10), 64, 64 }, { 5, 5 }, WHITE);
+	player = Player(true, { ((screenWidth - 50) / 2), screenHeight - (screenHeight / 10), 64, 64 }, { 5, 5 }, WHITE);
 
 	level1();
 }
@@ -160,15 +166,15 @@ void UpdateGame() {
 
 void DrawGame() {
 
-// Drawing
+	// Drawing
 	BeginDrawing();
 	// Setup the back buffer for drawing (clear color and depth buffers)
 	ClearBackground(BLACK);
 
-// Draw Main Menu
- 	// CENTER IMG FORMULA -> (screenWidth - myImage.width) / 2
-	// CENTER TEXT FORMULA -> (screenWidth - MeasureText("TEXT", fontSize)) / 2		FONT SIZE = 37
-	// CORRECT IMG SCALE -> (screenWidth - myImage.width * fminf((desiredWidth / myImage.width), (desiredHeight / myImage.height)) / 2.0f)
+	// Draw Main Menu
+		// CENTER IMG FORMULA -> (screenWidth - myImage.width) / 2
+		// CENTER TEXT FORMULA -> (screenWidth - MeasureText("TEXT", fontSize)) / 2		FONT SIZE = 37
+		// CORRECT IMG SCALE -> (screenWidth - myImage.width * fminf((desiredWidth / myImage.width), (desiredHeight / myImage.height)) / 2.0f)
 
 	Rectangle sourceRec = { 0.0f, 0.0f, 16.0f,  16.0f };
 	float scale = (float)screenWidth / (float)main_menu_background.width;
@@ -212,9 +218,9 @@ void DrawGame() {
 		}
 		else if (lstate == FINISH) {
 			DrawTextureEx(main_menu_logo, { (screenWidth - (main_menu_logo.width * fminf((800.0f / main_menu_logo.width), (400.0f / main_menu_logo.height)))) / 2.0f, (screenHeight / 4.0f) - ((main_menu_logo.height * fminf((800.0f / main_menu_logo.width), (400.0f / main_menu_logo.height))) / 2.0f) }, 0.0f, fminf((800.0f / main_menu_logo.width), (400.0f / main_menu_logo.height)), WHITE);
-				
+
 		}
-		
+
 		DrawText("TO START PRESS [ENTER]!", (screenWidth - MeasureText("TO START PRESS [ENTER]!", fontSize)) / 2, (screenHeight - (screenHeight / 3)), fontSize, GREEN);
 		if (blink >= 0 && blink <= 40) { DrawText("INSERT COIN", (screenWidth - MeasureText("INSERT COIN", fontSize)) / 2, (screenHeight - ((screenHeight / 3) + 50)), fontSize, GREEN); }
 		DrawText("© 1981 1987 NAMCO", (screenWidth - MeasureText("© 1981 1987 NAMCO", fontSize)) / 2, 806, fontSize, WHITE);
@@ -249,9 +255,9 @@ void DrawGame() {
 			Color fadeColor = WHITE;
 			DrawTextureEx(level1_background, { 0, 0 }, 0.0f, ((float)screenWidth / credits_screen.width, (float)screenHeight / credits_screen.height), fadeColor);
 		}
-		
+
 		// Draw Player
-		DrawTexturePro(player_sprite, sourceRec, player.GetRec(), { 0, 0 }, 0.0f, WHITE);
+		if (player.IsActive()) { DrawTexturePro(player_sprite, sourceRec, player.GetRec(), { 0, 0 }, 0.0f, WHITE); }
 
 		// Draw Zakko Enemies
 		for (const Zakko& z : zakkos) {
@@ -274,10 +280,10 @@ void DrawGame() {
 			if (d.IsActive()) {
 				sourceRec = { 0.0f, d.GetCurrentFrame() * 16.0f, 16.0f, 16.0f };
 				switch (d.GetVariant()) {
-					case 0: DrawTexturePro(don1_sprite, sourceRec, d.GetRec(), { 0, 0 }, 0.0f, WHITE); break;
-					case 1: DrawTexturePro(don2_sprite, sourceRec, d.GetRec(), { 0, 0 }, 0.0f, WHITE); break;
-					case 2:	DrawTexturePro(don3_sprite, sourceRec, d.GetRec(), { 0, 0 }, 0.0f, WHITE); break;
-					case 3:	DrawTexturePro(don4_sprite, sourceRec, d.GetRec(), { 0, 0 }, 0.0f, WHITE); break;
+				case 0: DrawTexturePro(don1_sprite, sourceRec, d.GetRec(), { 0, 0 }, 0.0f, WHITE); break;
+				case 1: DrawTexturePro(don2_sprite, sourceRec, d.GetRec(), { 0, 0 }, 0.0f, WHITE); break;
+				case 2:	DrawTexturePro(don3_sprite, sourceRec, d.GetRec(), { 0, 0 }, 0.0f, WHITE); break;
+				case 3:	DrawTexturePro(don4_sprite, sourceRec, d.GetRec(), { 0, 0 }, 0.0f, WHITE); break;
 				}
 			}
 		}
@@ -297,6 +303,25 @@ void DrawGame() {
 				sourceRec = { 0.0f, es.GetCurrentFrame() * 16.0f, 16.0f, 16.0f };
 				Rectangle dest = { es.GetX() - (sourceRec.width * scale - es.GetRec().width) / 2, es.GetY() - (sourceRec.height * scale - es.GetRec().height) / 2, sourceRec.width * scale, sourceRec.height * scale };
 				DrawTexturePro(zakko_shot_sprite, sourceRec, dest, { 0, 0 }, 0.0f, WHITE);
+			}
+		}
+
+		// Draw Player Explosion
+		for (const PlayerExplosion& e : explosion) {
+			if (e.IsActive()) {
+				sourceRec = { 0.0f, e.GetCurrentFrame() * 32.0f, 32.0f, 32.0f };
+				Rectangle dest = { e.GetX(), e.GetY(), 64, 64 };
+				DrawTexturePro(enemy_explosion, sourceRec, dest, { 0, 0 }, 0.0f, WHITE);
+				//DrawTexturePro(enemy_explosion, sourceRec, e.GetRec(), { 0, 0 }, 0.0f, WHITE);
+			}
+		}
+
+		// Draw Enemy Explosion
+		for (const EnemyExplosion& ee : eexplosion) {
+			if (ee.IsActive()) {
+				sourceRec = { 0.0f, ee.GetCurrentFrame() * 32.0f, 32.0f, 32.0f };
+				Rectangle dest = { ee.GetX(), ee.GetY(), 64, 64 };
+				DrawTexturePro(enemy_explosion, sourceRec, dest, { 0, 0 }, 0.0f, WHITE);
 			}
 		}
 	}
@@ -390,6 +415,26 @@ void DrawGame() {
 					(int)es.GetRec().width,
 					(int)es.GetRec().height,
 					RED
+				);
+			}
+
+			for (const Explosion& e : explosion) {
+				DrawRectangleLines(
+					(int)e.GetRec().x,
+					(int)e.GetRec().y,
+					(int)e.GetRec().width,
+					(int)e.GetRec().height,
+					DARKPURPLE
+				);
+			}
+
+			for (const EnemyExplosion& ee : eexplosion) {
+				DrawRectangleLines(
+					(int)ee.GetRec().x,
+					(int)ee.GetRec().y,
+					(int)ee.GetRec().width,
+					(int)ee.GetRec().height,
+					PURPLE
 				);
 			}
 		}
@@ -498,9 +543,13 @@ void InGame() {
 		}
 
 		// Player Death
-		if (lives == 0) {
+		if (lives <= 0) {
+			player.ChangeState(false);
 			gameOver = true;
 			inGame = false;
+		}
+		else {
+			player.ChangeState(true);
 		}
 
 	//#-------#
@@ -662,6 +711,15 @@ void InGame() {
 						z.ChangeState(false);
 						PlaySound(enemy_killed);
 
+					// Explosion
+						for (EnemyExplosion& ee : eexplosion) {
+							if (!ee.IsActive()) {
+								//ee.Activate({ z.GetX(), z.GetY() }, z.GetRec().width, z.GetRec().height);
+								ee.Activate({ z.GetX() + z.GetRec().width / 2 - 32, z.GetY() + z.GetRec().height / 2 - 32 }, 64, 64);
+								break;
+							}
+						}
+					
 					// Score
 						score += 100;
 						if (score > highscore) {
@@ -678,6 +736,14 @@ void InGame() {
 						g.ChangeState(false);
 						PlaySound(enemy_killed);
 
+						// Explosion
+						for (EnemyExplosion& ee : eexplosion) {
+							if (!ee.IsActive()) {
+								ee.Activate({ g.GetX(), g.GetY() }, g.GetRec().width, g.GetRec().height);
+								break;
+							}
+						}
+
 						// Score
 						score += 50;
 						if (score > highscore) {
@@ -693,6 +759,14 @@ void InGame() {
 						s.ChangeState(false);
 						d.ChangeState(false);
 						PlaySound(enemy_killed);
+
+						// Explosion
+						for (EnemyExplosion& ee : eexplosion) {
+							if (!ee.IsActive()) {
+								ee.Activate({ d.GetX(), d.GetY() }, d.GetRec().width, d.GetRec().height);
+								break;
+							}
+						}
 
 						// Score
 						score += 50;
@@ -720,11 +794,13 @@ void InGame() {
 			// Colision with Player (death)
 			if (es.IsActive()) {
 				if (CheckCollisionRecs(es.GetRec(), player.GetRec())) {
+					for (EnemyExplosion& e : eexplosion) {
+						e.Activate({ player.GetX(), player.GetY() });
+					}
 					es.ChangeState(false);
 					lives -= 1;
 					PlaySound(fighter_killed);
 					PlayMusicStream(game_over_music);
-
 				}
 			}
 
@@ -732,6 +808,15 @@ void InGame() {
 			if (es.GetY() > screenHeight) {
 				es.ChangeState(false);
 			}
+		}
+
+		// Explosions
+		for (PlayerExplosion& e : explosion) {
+			e.UpdateAnimation(4, 6);
+		}
+
+		for (EnemyExplosion& e : eexplosion) {
+			e.UpdateAnimation(4, 6);
 		}
 
 		//#-------#
@@ -747,6 +832,16 @@ void InGame() {
 }
 
 void GameOver() {
+
+	// Explosions
+	for (PlayerExplosion& e : explosion) {
+		e.UpdateAnimation(4, 6);
+	}
+
+	for (EnemyExplosion& e : eexplosion) {
+		e.UpdateAnimation(4, 6);
+	}
+
 	UpdateMusicStream(game_over_music);
 	if (IsKeyPressed(KEY_ENTER)) {
 		gameOver = false;
@@ -767,6 +862,11 @@ void GameOver() {
 		for (EnemyShot& es : eshot) {
 			es.ChangeState(false);
 			es.SetPos(-100, -100);
+		}
+
+		for (PlayerExplosion& e : explosion) {
+			e.ChangeState(false);
+			e.SetPos(-100, -100);
 		}
 
 		score = 0;
@@ -816,7 +916,7 @@ void Restart() {
 
 void level1() {
 
-	player = Player({ ((screenWidth - 50) / 2), screenHeight - (screenHeight / 10), 64, 64 }, { 5, 5 }, WHITE);
+	player = Player(true, { ((screenWidth - 50) / 2), screenHeight - (screenHeight / 10), 64, 64 }, { 5, 5 }, WHITE);
 
 	for (int i = 0; i < 10; ++i) {
 		zakkos.push_back(Zakko({ i * 64.0f, 100, 64, 64 }, { 1.0f, 0 }, WHITE, true, 0, 0, 0));
@@ -833,11 +933,19 @@ void level1() {
 	for (int i = 0; i < 50; ++i) {
 		eshot.push_back(EnemyShot({ (enemy.GetRec().x + enemy.GetRec().width) / 2, enemy.GetRec().y, 12, 24 }, { 0, 10 }, WHITE, false, 0, 0));
 	}
+
+	for (int i = 0; i < 50; ++i) {
+		explosion.push_back(PlayerExplosion({ (player.GetRec().x + player.GetRec().width) / 2, player.GetRec().y, 12, 24 }, { 0, 0 }, WHITE, false, 0, 0));	
+	}
+
+	for (int i = 0; i < 50; ++i) {
+		eexplosion.push_back(EnemyExplosion({ 0, 0, 0, 0 }, { 0, 0 }, WHITE, false, 0, 0));
+	}
 }
 
 void level2() {
 
-	player = Player({ ((screenWidth - 50) / 2), screenHeight - (screenHeight / 10), 64, 64 }, { 5, 5 }, WHITE);
+	player = Player(true, { ((screenWidth - 50) / 2), screenHeight - (screenHeight / 10), 64, 64 }, { 5, 5 }, WHITE);
 
 	for (int i = 0; i < 10; ++i) {
 		goeis.push_back(Goei({ i * 64.0f, 200, 64, 64 }, { 1.0f, 0 }, WHITE, true, 0, 0, 0));
