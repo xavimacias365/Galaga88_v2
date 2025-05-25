@@ -16,9 +16,9 @@ using namespace std;
 #include "classes.h"
 #include "resources.h"
 //#include "draw.h"
-#include "player.h"
-#include "enemies.h"
-#include "globals.h"
+//#include "player.h"
+//#include "enemies.h"
+//#include "globals.h"
 
 // Defines
 #define screenWidth 840
@@ -55,6 +55,7 @@ MainMenuEnemy enemy;
 MainMenuLightning lightning;
 vector<Zakko> zakkos;
 vector<Don> dons;
+vector<BabyDon> babydons;
 vector<Goei> goeis;
 Player player;
 vector<PlayerShot> shot;
@@ -80,6 +81,7 @@ void Restart();
 
 void level1();
 void level2();
+int CountEnemiesOnScreen();
 
 void GameCheats();
 
@@ -288,6 +290,19 @@ void DrawGame() {
 			}
 		}
 
+		// Draw Baby Don Enemies
+		for (const BabyDon& bd : babydons) {
+			if (bd.IsActive()) {
+				sourceRec = { 0.0f, bd.GetCurrentFrame() * 16.0f, 16.0f, 16.0f };
+				switch (bd.GetVariant()) {
+				case 0: DrawTexturePro(baby_don1_sprite, sourceRec, bd.GetRec(), { 0, 0 }, 0.0f, WHITE); break;
+				case 1: DrawTexturePro(baby_don2_sprite, sourceRec, bd.GetRec(), { 0, 0 }, 0.0f, WHITE); break;
+				case 2:	DrawTexturePro(baby_don3_sprite, sourceRec, bd.GetRec(), { 0, 0 }, 0.0f, WHITE); break;
+				case 3:	DrawTexturePro(baby_don4_sprite, sourceRec, bd.GetRec(), { 0, 0 }, 0.0f, WHITE); break;
+				}
+			}
+		}
+
 		// Draw Player Shoots
 		for (const Shot& s : shot) {
 			if (s.IsActive()) {
@@ -312,7 +327,6 @@ void DrawGame() {
 				sourceRec = { 0.0f, e.GetCurrentFrame() * 32.0f, 32.0f, 32.0f };
 				Rectangle dest = { e.GetX(), e.GetY(), 64, 64 };
 				DrawTexturePro(enemy_explosion, sourceRec, dest, { 0, 0 }, 0.0f, WHITE);
-				//DrawTexturePro(enemy_explosion, sourceRec, e.GetRec(), { 0, 0 }, 0.0f, WHITE);
 			}
 		}
 
@@ -394,6 +408,16 @@ void DrawGame() {
 					(int)d.GetRec().y,
 					(int)d.GetRec().width,
 					(int)d.GetRec().height,
+					PINK
+				);
+			}
+
+			for (const BabyDon& bd : babydons) {
+				DrawRectangleLines(
+					(int)bd.GetRec().x,
+					(int)bd.GetRec().y,
+					(int)bd.GetRec().width,
+					(int)bd.GetRec().height,
 					PINK
 				);
 			}
@@ -543,10 +567,13 @@ void InGame() {
 		}
 
 		// Player Death
-		if (lives <= 0) {
+		if (lives == 0) {
 			player.ChangeState(false);
 			gameOver = true;
 			inGame = false;
+		}
+		else if (lives < 0) {
+			lives = 0;
 		}
 		else {
 			player.ChangeState(true);
@@ -594,7 +621,7 @@ void InGame() {
 		// Zakko Shooting
 		for (Zakko& z : zakkos) {
 			if (z.IsActive()) {
-				z.SetShot(rand() % 100);
+				z.SetShot(rand() % 150);
 
 				if (z.GetShot() == 1) {
 					for (EnemyShot& es : eshot) {
@@ -695,6 +722,18 @@ void InGame() {
 			}
 		}
 
+		// Baby don
+		for (BabyDon& bd : babydons) {
+			if (bd.IsActive()) {
+				bd.SetY(bd.GetY() + bd.GetSpeed().y);
+				bd.UpdateAnimation(2, 20);
+			}
+
+			if (bd.GetY() > screenHeight) {
+				bd.ChangeState(false);
+			}
+		}
+
 		//#-------#
 
 		// Shot Behaviour
@@ -704,78 +743,123 @@ void InGame() {
 			}
 
 		// Colision with enemy
-			for (Zakko& z : zakkos) {
-				if (z.IsActive() && s.IsActive()) {
-					if  (CheckCollisionRecs(s.GetRec(), z.GetRec())) {
-						s.ChangeState(false);
-						z.ChangeState(false);
-						PlaySound(enemy_killed);
+		for (Zakko& z : zakkos) {
+			if (z.IsActive() && s.IsActive()) {
+				if  (CheckCollisionRecs(s.GetRec(), z.GetRec())) {
+					s.ChangeState(false);
+					z.ChangeState(false);
+					PlaySound(enemy_killed);
 
 					// Explosion
-						for (EnemyExplosion& ee : eexplosion) {
-							if (!ee.IsActive()) {
-								//ee.Activate({ z.GetX(), z.GetY() }, z.GetRec().width, z.GetRec().height);
-								ee.Activate({ z.GetX() + z.GetRec().width / 2 - 32, z.GetY() + z.GetRec().height / 2 - 32 }, 64, 64);
-								break;
-							}
+					for (EnemyExplosion& ee : eexplosion) {
+						if (!ee.IsActive()) {
+							ee.Activate({ z.GetX() + z.GetRec().width / 2 - 32, z.GetY() + z.GetRec().height / 2 - 32 }, 64, 64);
 						}
+					}
 					
 					// Score
-						score += 100;
-						if (score > highscore) {
-							highscore = score;
-						}
+					score += 100;
+					if (score > highscore) {
+						highscore = score;
 					}
 				}
 			}
+		}
 
-			for (Goei& g : goeis) {
-				if (g.IsActive() && s.IsActive()) {
-					if (CheckCollisionRecs(s.GetRec(), g.GetRec())) {
-						s.ChangeState(false);
-						g.ChangeState(false);
-						PlaySound(enemy_killed);
+		for (Goei& g : goeis) {
+			if (g.IsActive() && s.IsActive()) {
+				if (CheckCollisionRecs(s.GetRec(), g.GetRec())) {
+					s.ChangeState(false);
+					g.ChangeState(false);
+					PlaySound(enemy_killed);
 
-						// Explosion
-						for (EnemyExplosion& ee : eexplosion) {
-							if (!ee.IsActive()) {
-								ee.Activate({ g.GetX(), g.GetY() }, g.GetRec().width, g.GetRec().height);
-								break;
-							}
+					// Explosion
+					for (EnemyExplosion& ee : eexplosion) {
+						if (!ee.IsActive()) {
+							ee.Activate({ g.GetX(), g.GetY() }, g.GetRec().width, g.GetRec().height);
 						}
+					}
 
-						// Score
-						score += 50;
-						if (score > highscore) {
-							highscore = score;
-						}
+					// Score
+					score += 50;
+					if (score > highscore) {
+						highscore = score;
 					}
 				}
 			}
+		}
 
-			for (Don& d : dons) {
-				if (d.IsActive() && s.IsActive()) {
-					if (CheckCollisionRecs(s.GetRec(), d.GetRec())) {
-						s.ChangeState(false);
-						d.ChangeState(false);
-						PlaySound(enemy_killed);
+		for (Don& d : dons) {
+			if (d.IsActive() && s.IsActive()) {
+				if (CheckCollisionRecs(s.GetRec(), d.GetRec())) {
+					s.ChangeState(false);
+					d.ChangeState(false);
+					PlaySound(enemy_killed);
 
-						// Explosion
-						for (EnemyExplosion& ee : eexplosion) {
-							if (!ee.IsActive()) {
-								ee.Activate({ d.GetX(), d.GetY() }, d.GetRec().width, d.GetRec().height);
-								break;
-							}
+					int parentVariant = d.GetVariant();
+					Vector2 origin = { d.GetX(), d.GetY() };
+					Vector2 commonSpeed = { 0.0f, 7.5f };
+					vector<Vector2> offsets = {
+						{ -48.0f, 0.0f },
+						{ -16.0f, 0.0f },
+						{  16.0f, 0.0f },
+						{  48.0f, 0.0f }
+					};
+
+					int spawned = 0;
+					for (BabyDon& bd : babydons) {
+						if (!bd.IsActive()) {
+							Rectangle rec = {
+								origin.x + offsets[spawned].x,
+								origin.y + offsets[spawned].y,
+								32, 32
+							};
+							bd = BabyDon(rec, commonSpeed, WHITE, true, 0, 0, 0, 0);
+							bd.SetVariant(parentVariant);
+							spawned++;
+							if (spawned >= 4) break;
 						}
+					}
 
-						// Score
-						score += 50;
-						if (score > highscore) {
-							highscore = score;
+					// Explosion
+					for (EnemyExplosion& ee : eexplosion) {
+						if (!ee.IsActive()) {
+							ee.Activate({ d.GetX(), d.GetY() }, d.GetRec().width, d.GetRec().height);
+							break;
 						}
+					}
+
+					// Score
+					score += 50;
+					if (score > highscore) {
+						highscore = score;
 					}
 				}
 			}
+		}
+
+		for (BabyDon& bd : babydons) {
+			if (bd.IsActive() && s.IsActive()) {
+				if (CheckCollisionRecs(s.GetRec(), bd.GetRec())) {
+					s.ChangeState(false);
+					bd.ChangeState(false);
+					PlaySound(enemy_killed);
+
+					// Explosion
+					for (EnemyExplosion& ee : eexplosion) {
+						if (!ee.IsActive()) {
+							ee.Activate({ bd.GetX(), bd.GetY() }, bd.GetRec().width, bd.GetRec().height);
+						}
+					}
+
+					// Score
+					score += 25;
+					if (score > highscore) {
+						highscore = score;
+					}
+				}
+			}
+		}
 
 		// Despawn shot
 			if (s.GetY() < 0) {
@@ -791,7 +875,7 @@ void InGame() {
 				es.SetY(es.GetY() + es.GetSpeed().y);
 			}
 
-			// Colision with Player (death)
+			// Colision shots with Player (death)
 			if (es.IsActive()) {
 				if (CheckCollisionRecs(es.GetRec(), player.GetRec())) {
 					for (EnemyExplosion& e : eexplosion) {
@@ -810,6 +894,21 @@ void InGame() {
 			}
 		}
 
+		// Colision baby dons with Player (death)
+		for (BabyDon& bd : babydons) {
+			if (bd.IsActive()) {
+				if (CheckCollisionRecs(bd.GetRec(), player.GetRec())) {
+					for (EnemyExplosion& e : eexplosion) {
+						e.Activate({ player.GetX(), player.GetY() });
+					}
+					bd.ChangeState(false);
+					lives -= 1;
+					PlaySound(fighter_killed);
+					PlayMusicStream(game_over_music);
+				}
+			}
+		}
+
 		// Explosions
 		for (PlayerExplosion& e : explosion) {
 			e.UpdateAnimation(4, 6);
@@ -822,7 +921,7 @@ void InGame() {
 		//#-------#
 
 		// Win Condition
-		if (score == 1500) {
+		if (CountEnemiesOnScreen() == 0) {
 			inGame = false;
 			victory = true;
 			PlayMusicStream(victory_music);
@@ -908,6 +1007,7 @@ void Restart() {
 	zakkos.clear();
 	goeis.clear();
 	dons.clear();
+	babydons.clear();
 	shot.clear();
 	eshot.clear();
 
@@ -927,19 +1027,23 @@ void level1() {
 	}
 
 	for (int i = 0; i < 50; ++i) {
-		shot.push_back(PlayerShot({ (player.GetRec().x + player.GetRec().width) / 2, player.GetRec().y, 12, 24 }, { 0, 10 }, WHITE, false));
+		babydons.push_back(BabyDon({ -100, -100, 64, 64 }, { 1.0f, 7.5f }, WHITE, false, 0, 0, 0, 0));
 	}
 
 	for (int i = 0; i < 50; ++i) {
-		eshot.push_back(EnemyShot({ (enemy.GetRec().x + enemy.GetRec().width) / 2, enemy.GetRec().y, 12, 24 }, { 0, 10 }, WHITE, false, 0, 0));
+		shot.push_back(PlayerShot({ -100, -100, 12, 24 }, { 0, 10 }, WHITE, false));
 	}
 
 	for (int i = 0; i < 50; ++i) {
-		explosion.push_back(PlayerExplosion({ (player.GetRec().x + player.GetRec().width) / 2, player.GetRec().y, 12, 24 }, { 0, 0 }, WHITE, false, 0, 0));	
+		eshot.push_back(EnemyShot({ -100, -100, 12, 24 }, { 0, 10 }, WHITE, false, 0, 0));
 	}
 
 	for (int i = 0; i < 50; ++i) {
-		eexplosion.push_back(EnemyExplosion({ 0, 0, 0, 0 }, { 0, 0 }, WHITE, false, 0, 0));
+		explosion.push_back(PlayerExplosion({ -100, -100, 12, 24 }, { 0, 0 }, WHITE, false, 0, 0));
+	}
+
+	for (int i = 0; i < 50; ++i) {
+		eexplosion.push_back(EnemyExplosion({ -100, -100, 0, 0 }, { 0, 0 }, WHITE, false, 0, 0));
 	}
 }
 
@@ -951,6 +1055,36 @@ void level2() {
 		goeis.push_back(Goei({ i * 64.0f, 200, 64, 64 }, { 1.0f, 0 }, WHITE, true, 0, 0, 0));
 	}
 
+	for (int i = 0; i < 50; ++i) {
+		explosion.push_back(PlayerExplosion({ (player.GetRec().x + player.GetRec().width) / 2, player.GetRec().y, 12, 24 }, { 0, 0 }, WHITE, false, 0, 0));
+	}
+
+	for (int i = 0; i < 50; ++i) {
+		eexplosion.push_back(EnemyExplosion({ 0, 0, 0, 0 }, { 0, 0 }, WHITE, false, 0, 0));
+	}
+
+}
+
+int CountEnemiesOnScreen() {
+	activeEnemies = 0;
+
+	for (Zakko& z : zakkos) {
+		if (z.IsActive()) activeEnemies++;
+	}
+
+	for (Goei& g : goeis) {
+		if (g.IsActive()) activeEnemies++;
+	}
+
+	for (Don& d : dons) {
+		if (d.IsActive()) activeEnemies++;
+	}
+
+	for (BabyDon& bd : babydons) {
+		if (bd.IsActive()) activeEnemies++;
+	}
+
+	return activeEnemies;
 }
 
 void GameCheats() {
@@ -1008,3 +1142,29 @@ void GameCheats() {
 		inGame = false;
 	}
 }
+
+/*
+
+MIT License
+
+	Copyright (c) 2025 Repeaters Studio - Galaga 88.
+
+	Permission is hereby granted, free of charge, to any person obtaining a copy
+	of this software and associated documentation files (the "Software"), to deal
+	in the Software without restriction, including without limitation the rights
+	to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+	copies of the Software, and to permit persons to whom the Software is
+	furnished to do so, subject to the following conditions:
+
+	The above copyright notice and this permission notice shall be included in all
+	copies or substantial portions of the Software.
+
+	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+	IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+	FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+	AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+	LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+	SOFTWARE.
+
+*/
