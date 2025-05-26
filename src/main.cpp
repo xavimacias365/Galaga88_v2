@@ -914,7 +914,7 @@ void InGame() {
 		for (BossGalaga& bg : bossqueen) {
 			if (bg.IsActive()) {
 				bg.SetShot(rand() % 50);
-				bg.SetSpawn(rand() % 25);
+				bg.SetSpawn(rand() % 80);
 
 				if (bg.GetShot() == 1) {
 					for (EnemyShot& es : eshot) {
@@ -931,18 +931,12 @@ void InGame() {
 				int parentVariant = bg.GetVariant();
 				Vector2 origin = { bg.GetX(), bg.GetY() };
 				Vector2 commonSpeed = { 0.0f, 7.5f };
-				vector<Vector2> offsets = {
-					{ -48.0f, 0.0f },
-					{ -16.0f, 0.0f },
-					{  16.0f, 0.0f },
-					{  48.0f, 0.0f }
-				};
 
 				if (bg.GetSpawn() == 1)
 				{
 					for (BabyDon& bd : babydons) {
 						if (!bd.IsActive()) {
-							Rectangle rec = { origin.x, origin.y, 32, 32 };
+							Rectangle rec = { origin.x+64, origin.y, 32, 32 };
 							bd = BabyDon(rec, commonSpeed, WHITE, true, 0, 0, 0, 0);
 							bd.SetVariant(parentVariant);
 							PlaySound(enemy_shot);
@@ -1358,12 +1352,12 @@ void level2() {
 		shot.push_back(PlayerShot({ -100, -100, 12, 24 }, { 0, 10 }, WHITE, false));
 	}
 
-	for (int i = 0; i < 1; ++i) {
-		bossqueen.push_back(BossGalaga({ i * 64.0f, 200, 300, 64 }, { 1.0f, 0 }, WHITE, true, 0, 0, 0, 16, 4, 1));
-	}
-
 	for (int i = 0; i < 50; ++i) {
 		babydons.push_back(BabyDon({ -100, -100, 64, 64 }, { 1.0f, 7.5f }, WHITE, false, 0, 0, 0, 0));
+	}
+
+	for (int i = 0; i < 1; ++i) {
+		bossqueen.push_back(BossGalaga({ i * 64.0f, 200, 300, 64 }, { 1.0f, 0 }, WHITE, true, 0, 0, 0, 16, 4, 1));
 	}
 
 	for (int i = 0; i < 50; ++i) {
