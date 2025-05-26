@@ -362,16 +362,11 @@ void DrawGame() {
 		// Draw Boss Galaga Enemies
 		for (const BossGalaga& bg : bossqueen) {
 			if (bg.IsActive()) {
+
 				sourceRec = { 0.0f, bg.GetCurrentFrame() * 64.0f, 64.0f, 64.0f };
 				Rectangle dest = { bg.GetX() - (sourceRec.width * scale - bg.GetRec().width) / 2, bg.GetY() - (sourceRec.height * scale - bg.GetRec().height) / 2, sourceRec.width * scale, sourceRec.height * scale };
 				DrawTexturePro(boss_queen_sprite, sourceRec, dest, { 0, 0 }, 0.0f, WHITE);
 
-				//if (bg.GetEntityLives() == 16) {
-				//	DrawTexturePro(boss_queen_sprite, sourceRec, bg.GetRec(), { 0, 0 }, 0.0f, WHITE);
-				//}
-				//else if (bg.GetEntityLives() == 1) {
-				//	DrawTexturePro(mini_boss_galaga_damaged_sprite, sourceRec, bg.GetRec(), { 0, 0 }, 0.0f, WHITE);
-				//}
 			}
 		}
 
@@ -919,6 +914,7 @@ void InGame() {
 		for (BossGalaga& bg : bossqueen) {
 			if (bg.IsActive()) {
 				bg.SetShot(rand() % 50);
+				bg.SetSpawn(rand() % 25);
 
 				if (bg.GetShot() == 1) {
 					for (EnemyShot& es : eshot) {
@@ -931,6 +927,30 @@ void InGame() {
 						}
 					}
 				}
+
+				int parentVariant = bg.GetVariant();
+				Vector2 origin = { bg.GetX(), bg.GetY() };
+				Vector2 commonSpeed = { 0.0f, 7.5f };
+				vector<Vector2> offsets = {
+					{ -48.0f, 0.0f },
+					{ -16.0f, 0.0f },
+					{  16.0f, 0.0f },
+					{  48.0f, 0.0f }
+				};
+
+				if (bg.GetSpawn() == 1)
+				{
+					for (BabyDon& bd : babydons) {
+						if (!bd.IsActive()) {
+							Rectangle rec = { origin.x, origin.y, 32, 32 };
+							bd = BabyDon(rec, commonSpeed, WHITE, true, 0, 0, 0, 0);
+							bd.SetVariant(parentVariant);
+							PlaySound(enemy_shot);
+							break;
+						}
+					}
+				}
+
 			}
 		}
 
@@ -1339,7 +1359,11 @@ void level2() {
 	}
 
 	for (int i = 0; i < 1; ++i) {
-		bossqueen.push_back(BossGalaga({ i * 64.0f, 200, 300, 64 }, { 1.0f, 0 }, WHITE, true, 0, 0, 0, 2));
+		bossqueen.push_back(BossGalaga({ i * 64.0f, 200, 300, 64 }, { 1.0f, 0 }, WHITE, true, 0, 0, 0, 16, 4, 1));
+	}
+
+	for (int i = 0; i < 50; ++i) {
+		babydons.push_back(BabyDon({ -100, -100, 64, 64 }, { 1.0f, 7.5f }, WHITE, false, 0, 0, 0, 0));
 	}
 
 	for (int i = 0; i < 50; ++i) {
