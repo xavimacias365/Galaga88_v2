@@ -24,7 +24,8 @@ Move between screens `1-7` (not numpad).
 Go to Testing level `8` (not numpad).
 
 ## Github Project link
-https://github.com/JonyDProgramer/Proyect1Ctim
+(Prototype): https://github.com/JonyDProgramer/Proyect1Ctim
+(Alpha): https://github.com/xavimacias365/Galaga88_v2
 
 ## 1 min Video Gameplay
 (Prototype): https://drive.google.com/file/d/191MitnHw2ltMA8Axo-wNF8AAjvqScqS4/view?usp=drive_link
