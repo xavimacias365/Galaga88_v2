@@ -888,7 +888,7 @@ void InGame() {
 
 		// Check collision with walls
 		hitLeftWall = (leftMostMBGCol <= 0);
-		hitRightWall = (rightMostMBGCol >= screenWidth - 80);
+		hitRightWall = (rightMostMBGCol >= screenWidth - 40);
 		if (hitLeftWall || hitRightWall) {
 			for (BossGalaga& bg : bossqueen) {
 				Vector2 speed = bg.GetSpeed();
@@ -930,7 +930,7 @@ void InGame() {
 				{
 					for (BabyDon& bd : babydons) {
 						if (!bd.IsActive()) {
-							Rectangle rec = { origin.x+128, origin.y, 32, 32 };
+							Rectangle rec = { origin.x+200, origin.y, 32, 32 };
 							bd = BabyDon(rec, commonSpeed, WHITE, true, 0, 0, 0, 0);
 							bd.SetVariant(parentVariant);
 							PlaySound(enemy_shot);
@@ -1351,7 +1351,7 @@ void level2() {
 	}
 
 	for (int i = 0; i < 1; ++i) {
-		bossqueen.push_back(BossGalaga({ i * 64.0f, 200, 64, 64 }, { 1.0f, 0 }, WHITE, true, 0, 0, 0, 16, 3, 1));
+		bossqueen.push_back(BossGalaga({ i * 64.0f, 200, 400, 64 }, { 1.0f, 0 }, WHITE, true, 0, 0, 0, 16, 3, 1));
 	}
 
 	for (int i = 0; i < 50; ++i) {
@@ -1373,11 +1373,11 @@ void Stage0() {
 	player = Player(true, { ((screenWidth - 50) / 2), screenHeight - (screenHeight / 10), 64, 64 }, { 5, 5 }, WHITE);
 
 	for (int i = 0; i < 10; ++i) {
-		zakkos.push_back(Zakko({ i * 64.0f, 100, 64, 64 }, { 1.0f, 0 }, WHITE, true, 0, 0, 0));
+		zakkos.push_back(Zakko({ i * 64.0f, 300, 64, 64 }, { 1.0f, 0 }, WHITE, true, 0, 0, 0));
 	}
 
 	for (int i = 0; i < 10; ++i) {
-		dons.push_back(Don({ i * 64.0f, 300, 64, 64 }, { 1.0f, 0 }, WHITE, true, 0, 0, 0));
+		dons.push_back(Don({ i * 64.0f, 500, 64, 64 }, { 1.0f, 0 }, WHITE, true, 0, 0, 0));
 	}
 
 	for (int i = 0; i < 50; ++i) {
@@ -1385,15 +1385,15 @@ void Stage0() {
 	}
 
 	for (int i = 0; i < 10; ++i) {
-		miniboss.push_back(MiniBossGalaga({ i * 64.0f, 200, 64, 64 }, { 1.0f, 0 }, WHITE, true, 0, 0, 0, 2));
+		miniboss.push_back(MiniBossGalaga({ i * 64.0f, 400, 64, 64 }, { 1.0f, 0 }, WHITE, true, 0, 0, 0, 2));
 	}
 
 	for (int i = 0; i < 10; ++i) {
-		goeis.push_back(Goei({ i * 64.0f, 400, 64, 64 }, { 1.0f, 0 }, WHITE, true, 0, 0, 0));
+		goeis.push_back(Goei({ i * 64.0f, 600, 64, 64 }, { 1.0f, 0 }, WHITE, true, 0, 0, 0));
 	}
 
 	for (int i = 0; i < 1; ++i) {
-		bossqueen.push_back(BossGalaga({ i * 64.0f, 600, 64, 64 }, { 1.0f, 0 }, WHITE, true, 0, 0, 0, 16, 3, 1));
+		bossqueen.push_back(BossGalaga({ i * 64.0f, 100, 400, 64 }, { 1.0f, 0 }, WHITE, true, 0, 0, 0, 16, 3, 1));
 	}
 
 	for (int i = 0; i < 50; ++i) {
