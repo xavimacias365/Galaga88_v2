@@ -61,6 +61,7 @@ vector<EnemyShot> eshot;
 vector<MiniBossGalaga> miniboss;
 vector<PlayerExplosion> explosion;
 vector<EnemyExplosion> eexplosion;
+vector<BossGalaga> bossqueen;
 
 // functions
 void LoadGame();
@@ -291,6 +292,12 @@ void DrawGame() {
 			DrawTextureEx(stage_indicator, { (float)(screenWidth - stage_indicator.width * scale), (float)(screenHeight - stage_indicator.height * scale) }, 0.0f, scale, WHITE);
 			DrawTextureEx(stage_indicator, { (float)(screenWidth - stage_indicator.width * scale - ((stage_indicator.width * scale) / 2)), (float)(screenHeight - stage_indicator.height * scale) }, 0.0f, scale, WHITE);
 		}
+		else if (level == STAGE0)
+		{
+			DrawTextureEx(stage_indicator, { (float)(screenWidth - stage_indicator.width * scale), (float)(screenHeight - stage_indicator.height * scale) }, 0.0f, scale, WHITE);
+			DrawTextureEx(stage_indicator, { (float)(screenWidth - stage_indicator.width * scale - ((stage_indicator.width * scale) / 2)), (float)(screenHeight - stage_indicator.height * scale) }, 0.0f, scale, WHITE);
+			DrawTextureEx(stage_indicator, { (float)(screenWidth - stage_indicator.width * scale - ((stage_indicator.width * scale) / 4)), (float)(screenHeight - stage_indicator.height * scale) }, 0.0f, scale, WHITE);
+		}
 
 		// Draw Player
 		sourceRec = { 0.0f, 0.0f, 16.0f,  16.0f };
@@ -349,6 +356,22 @@ void DrawGame() {
 				else if (mbg.GetEntityLives() == 1) {
 					DrawTexturePro(mini_boss_galaga_damaged_sprite, sourceRec, mbg.GetRec(), { 0, 0 }, 0.0f, WHITE);
 				}
+			}
+		}
+
+		// Draw Boss Galaga Enemies
+		for (const BossGalaga& bg : bossqueen) {
+			if (bg.IsActive()) {
+				sourceRec = { 0.0f, bg.GetCurrentFrame() * 64.0f, 64.0f, 64.0f };
+				Rectangle dest = { bg.GetX() - (sourceRec.width * scale - bg.GetRec().width) / 2, bg.GetY() - (sourceRec.height * scale - bg.GetRec().height) / 2, sourceRec.width * scale, sourceRec.height * scale };
+				DrawTexturePro(boss_queen_sprite, sourceRec, dest, { 0, 0 }, 0.0f, WHITE);
+
+				//if (bg.GetEntityLives() == 16) {
+				//	DrawTexturePro(boss_queen_sprite, sourceRec, bg.GetRec(), { 0, 0 }, 0.0f, WHITE);
+				//}
+				//else if (bg.GetEntityLives() == 1) {
+				//	DrawTexturePro(mini_boss_galaga_damaged_sprite, sourceRec, bg.GetRec(), { 0, 0 }, 0.0f, WHITE);
+				//}
 			}
 		}
 
@@ -481,6 +504,16 @@ void DrawGame() {
 					(int)mbg.GetRec().y,
 					(int)mbg.GetRec().width,
 					(int)mbg.GetRec().height,
+					DARKBLUE
+				);
+			}
+
+			for (const BossGalaga& bg : bossqueen) {
+				DrawRectangleLines(
+					(int)bg.GetRec().x,
+					(int)bg.GetRec().y,
+					(int)bg.GetRec().width,
+					(int)bg.GetRec().height,
 					DARKBLUE
 				);
 			}
@@ -845,6 +878,71 @@ void InGame() {
 
 		//#-------#
 
+		// BossGalaga Movement
+		for (BossGalaga& bg : bossqueen) {
+			if (bg.IsActive()) {
+				bg.SetX(bg.GetX() + bg.GetSpeed().x);
+			}
+		}
+
+		// BossGalaga Wall Collisions
+		float leftMostBGCol = screenWidth;
+		float rightMostBGCol = 0.0f;
+
+		// Find edges
+		for (BossGalaga& bg : bossqueen) {
+			if (bg.IsActive()) {
+				if (bg.GetX() < leftMostMBGCol) { leftMostMBGCol = bg.GetX(); }
+				if (bg.GetX() + bg.GetRec().width > rightMostMBGCol) { rightMostMBGCol = bg.GetX() + bg.GetRec().width; }
+			}
+		}
+
+		// Check collision with walls
+		hitLeftWall = (leftMostMBGCol <= 0);
+		hitRightWall = (rightMostMBGCol >= screenWidth - 80);
+		if (hitLeftWall || hitRightWall) {
+			for (BossGalaga& bg : bossqueen) {
+				Vector2 speed = bg.GetSpeed();
+				speed.x *= -1;
+				bg.SetSpeed(speed);
+			}
+		}
+
+		// BossGalaga Frame Animation
+		for (BossGalaga& bg : bossqueen) {
+			if (bg.IsActive()) {
+				bg.UpdateAnimation(2, 20);
+			}
+		}
+
+		// BossGalaga Shooting
+		for (BossGalaga& bg : bossqueen) {
+			if (bg.IsActive()) {
+				bg.SetShot(rand() % 50);
+
+				if (bg.GetShot() == 1) {
+					for (EnemyShot& es : eshot) {
+						if (!es.IsActive()) {
+							es.SetX((bg.GetX() + bg.GetRec().width / 2));
+							es.SetY(bg.GetY()+74);
+							es.ChangeState(true);
+							PlaySound(enemy_shot);
+							break;
+						}
+					}
+				}
+			}
+		}
+
+		// BossGalaga Shot Frame Animation
+		for (EnemyShot& es : eshot) {
+			if (es.IsActive()) {
+				es.UpdateAnimation(2, 20);
+			}
+		}
+
+		//#-------#
+
 		// Shot Behaviour
 		for (Shot& s : shot) {
 			if (s.IsActive()) {
@@ -976,6 +1074,32 @@ void InGame() {
 
 					// Score
 					score += 150;
+				}
+			}
+		}
+
+		for (BossGalaga& bg : bossqueen) {
+			if (bg.IsActive() && s.IsActive() && CheckCollisionRecs(s.GetRec(), bg.GetRec())) {
+				s.ChangeState(false);
+
+				if (bg.GetEntityLives() > 1) {
+					bg.SetEntityLives(bg.GetEntityLives() - 1);
+					PlaySound(enemy_killed);
+				}
+				else {
+					bg.ChangeState(false);
+					PlaySound(enemy_killed);
+
+					// Explosion
+					for (EnemyExplosion& ee : eexplosion) {
+						if (!ee.IsActive()) {
+							ee.Activate({ bg.GetX(), bg.GetY() }, bg.GetRec().width, bg.GetRec().height);
+							break;
+						}
+					}
+
+					// Score
+					score += 600;
 				}
 			}
 		}
@@ -1148,6 +1272,7 @@ void Restart() {
 	dons.clear();
 	babydons.clear();
 	miniboss.clear();
+	bossqueen.clear();
 	shot.clear();
 	eshot.clear();
 
@@ -1161,6 +1286,7 @@ void Clear() {
 	dons.clear();
 	babydons.clear();
 	miniboss.clear();
+	bossqueen.clear();
 	shot.clear();
 	eshot.clear();
 }
@@ -1210,6 +1336,10 @@ void level2() {
 
 	for (int i = 0; i < 50; ++i) {
 		shot.push_back(PlayerShot({ -100, -100, 12, 24 }, { 0, 10 }, WHITE, false));
+	}
+
+	for (int i = 0; i < 1; ++i) {
+		bossqueen.push_back(BossGalaga({ i * 64.0f, 200, 300, 64 }, { 1.0f, 0 }, WHITE, true, 0, 0, 0, 2));
 	}
 
 	for (int i = 0; i < 50; ++i) {
@@ -1284,6 +1414,10 @@ int CountEnemiesOnScreen() {
 
 	for (MiniBossGalaga& mbg : miniboss) {
 		if (mbg.IsActive()) activeEnemies++;
+	}
+
+	for (BossGalaga& bg : bossqueen) {
+		if (bg.IsActive()) activeEnemies++;
 	}
 
 	return activeEnemies;

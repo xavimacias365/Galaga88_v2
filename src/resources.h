@@ -39,6 +39,7 @@ extern Texture2D baby_don4_sprite;
 extern Texture2D mini_boss_galaga_sprite;
 extern Texture2D mini_boss_galaga_damaged_sprite;
 extern Texture2D enemy_explosion;
+extern Texture2D boss_queen_sprite;
 
 extern Texture2D win_screen;
 
