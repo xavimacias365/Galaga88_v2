@@ -265,10 +265,15 @@ public:
 class BossGalaga : public Enemy {
 private:
 	int lives = 0;
+	int variant = 0;
 
 public:
 	BossGalaga() {}
 	BossGalaga(Rectangle rec, Vector2 speed, Color color, bool active, int shot, int frameCounter, int currentFrame, int lives) : Enemy(rec, speed, color, active, shot, frameCounter, currentFrame), lives(lives) {}
+
+	int GetEntityLives() const { return lives; }
+	void SetEntityLives(int bl) { lives = bl; }
+	
 };
 
 // --- Enemy Manager ---

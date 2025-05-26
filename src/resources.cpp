@@ -36,6 +36,7 @@ Texture2D baby_don4_sprite;
 Texture2D mini_boss_galaga_sprite;
 Texture2D mini_boss_galaga_damaged_sprite;
 Texture2D enemy_explosion;
+Texture2D boss_queen_sprite;
 
 Texture2D win_screen;
 
@@ -102,6 +103,7 @@ void LoadGame() {
 	mini_boss_galaga_sprite = LoadTexture("resources/Textures/entities/enemies/mini_boss.png");
 	mini_boss_galaga_damaged_sprite = LoadTexture("resources/Textures/entities/enemies/mini_boss_damaged.png");
 	enemy_explosion = LoadTexture("resources/Textures/entities/player/explosion.png");
+	boss_queen_sprite = LoadTexture("resources/Textures/entities/bosses/mini_boss_queen_frameSheet.png");
 
 	win_screen = LoadTexture("resources/Textures/UI/win_condition.png");
 
@@ -172,6 +174,7 @@ void UnloadGame() {
 	UnloadTexture(mini_boss_galaga_sprite);
 	UnloadTexture(mini_boss_galaga_damaged_sprite);
 	UnloadTexture(enemy_explosion);
+	UnloadTexture(boss_queen_sprite);
 
 	UnloadTexture(win_screen);
 
