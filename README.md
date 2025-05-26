@@ -3,6 +3,7 @@
 
 ## Game Description
 Embark into a space adventure to return to the headquarters while insect like aliens tries to attack you.
+Tribute to the original game Galaga '88.
 
 ## Developed by:
 	Xavi Macias (xavimacias365)
