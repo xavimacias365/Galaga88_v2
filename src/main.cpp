@@ -33,7 +33,7 @@ bool main_menu = 1;
 bool credits;
 bool launchSequence;
 bool inGame;
-enum LevelStage { LEVEL1, LEVEL2 };
+enum LevelStage { LEVEL1, LEVEL2, STAGE0 };
 LevelStage level = LEVEL1;
 
 bool showCollisions;
@@ -260,28 +260,26 @@ void DrawGame() {
 
 		DrawTextureEx(level3_background, { 0, 0 }, 0.0f, ((float)screenWidth / credits_screen.width, (float)screenHeight / credits_screen.height), WHITE);
 
-		if (alpha < 1.0f && level == LEVEL1) {
+		Color fadeColor = WHITE;
+
+		if (alpha < 1.0f) {
 			alpha += 0.01f;
 			if (alpha > 1.0f) alpha = 1.0f;
+			fadeColor = { 255, 255, 255, (unsigned char)(alpha * 255) };
+		}
 
-			Color fadeColor = { 255, 255, 255, (unsigned char)(alpha * 255) };
+		switch (level) {
+		case LEVEL1:
 			DrawTextureEx(level1_background, { 0, 0 }, 0.0f, ((float)screenWidth / credits_screen.width, (float)screenHeight / credits_screen.height), fadeColor);
-		}
-		else {
-			Color fadeColor = WHITE;
-			DrawTextureEx(level1_background, { 0, 0 }, 0.0f, ((float)screenWidth / credits_screen.width, (float)screenHeight / credits_screen.height), fadeColor);
-		}
+			break;
 
-		if (level == LEVEL2 && alpha < 1.0f) {
-			alpha += 0.01f;
-			if (alpha > 1.0f) alpha = 1.0f;
+		case LEVEL2:
+			DrawTextureEx(level2_background, { 0, 0 }, 0.0f, ((float)screenWidth / credits_screen.width, (float)screenHeight / credits_screen.height), WHITE);
+			break;
 
-			Color fadeColor = { 255, 255, 255, (unsigned char)(alpha * 255) };
-			DrawTextureEx(level2_background, { 0, 0 }, 0.0f, ((float)screenWidth / credits_screen.width, (float)screenHeight / credits_screen.height), WHITE);
-		}
-		else if (level == LEVEL2) {
-			Color fadeColor = WHITE;
-			DrawTextureEx(level2_background, { 0, 0 }, 0.0f, ((float)screenWidth / credits_screen.width, (float)screenHeight / credits_screen.height), WHITE);
+		case STAGE0:
+			DrawTextureEx(level3_background, { 0, 0 }, 0.0f, ((float)screenWidth / credits_screen.width, (float)screenHeight / credits_screen.height), WHITE);
+			break;
 		}
 
 		// Draw Stage indicator
@@ -1330,7 +1328,7 @@ void GameCheats() {
 		credits = false;
 		launchSequence = false;
 		inGame = true;
-		level == LEVEL1;
+		level = LEVEL1;
 		Clear();
 		level1();
 	}
@@ -1342,7 +1340,7 @@ void GameCheats() {
 		credits = false;
 		launchSequence = false;
 		inGame = true;
-		level == LEVEL2;
+		level = LEVEL2;
 		Clear();
 		level2();
 	}
@@ -1372,7 +1370,7 @@ void GameCheats() {
 		credits = false;
 		launchSequence = false;
 		inGame = true;
-		level == LEVEL1;
+		level = STAGE0;
 		Clear();
 		Stage0();
 	}
