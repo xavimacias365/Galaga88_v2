@@ -6,7 +6,7 @@
 
 // --- Base Game Class ---
 class Game {
-	// Aqui deberia de estar las variables globales. Creo que en este punto del desarrollo mover estas variables ahora sería perder el tiempo.
+	// Aqui deberia de estar las variables globales. Creo que en este punto del desarrollo mover estas variables ahora sería perder el tiempo (vamos muy apurados).
 };
 
 // --- Scene ---

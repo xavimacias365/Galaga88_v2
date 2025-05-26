@@ -15,10 +15,6 @@ using namespace std;
 
 #include "classes.h"
 #include "resources.h"
-//#include "draw.h"
-//#include "player.h"
-//#include "enemies.h"
-//#include "globals.h"
 
 // Defines
 #define screenWidth 840
@@ -192,7 +188,7 @@ void DrawGame() {
 		DrawTextureEx(main_menu_background, { 0, 0 }, 0.0f, ((float)screenWidth / main_menu_background.width, (float)screenHeight / main_menu_background.height), WHITE);
 		DrawTextureEx(main_menu_logo0, { (screenWidth - (main_menu_logo.width * fminf((800.0f / main_menu_logo.width), (400.0f / main_menu_logo.height)))) / 2.0f, (screenHeight / 4.0f) - ((main_menu_logo.height * fminf((800.0f / main_menu_logo.width), (400.0f / main_menu_logo.height))) / 2.0f) }, 0.0f, fminf((800.0f / main_menu_logo.width), (400.0f / main_menu_logo.height)), WHITE);
 
-		// Logo animation
+		// Logo animation && lightning
 		if (lstate == NUMBER) {
 			if (alpha < 1.0f) {
 				alpha += 0.01f;
@@ -200,7 +196,6 @@ void DrawGame() {
 
 				Color fadeColor = { 255, 255, 255, (unsigned char)(alpha * 255) };
 				DrawTextureEx(main_menu_logo1, { (screenWidth - (main_menu_logo.width * fminf((800.0f / main_menu_logo.width), (400.0f / main_menu_logo.height)))) / 2.0f, (screenHeight / 4.0f) - ((main_menu_logo.height * fminf((800.0f / main_menu_logo.width), (400.0f / main_menu_logo.height))) / 2.0f) }, 0.0f, fminf((800.0f / main_menu_logo.width), (400.0f / main_menu_logo.height)), fadeColor);
-				//fadeColor = Fade(WHITE, alpha);
 			}
 
 			if (alpha >= 1.0f) {
@@ -230,6 +225,7 @@ void DrawGame() {
 
 		}
 
+		// Main Menu Text
 		DrawText("TO START PRESS [ENTER]!", (screenWidth - MeasureText("TO START PRESS [ENTER]!", fontSize)) / 2, (screenHeight - (screenHeight / 3)), fontSize, GREEN);
 		if (blink >= 0 && blink <= 40) { DrawText("INSERT COIN", (screenWidth - MeasureText("INSERT COIN", fontSize)) / 2, (screenHeight - ((screenHeight / 3) + 50)), fontSize, GREEN); }
 		DrawText("© 1981 1987 NAMCO", (screenWidth - MeasureText("© 1981 1987 NAMCO", fontSize)) / 2, 806, fontSize, WHITE);
@@ -241,13 +237,16 @@ void DrawGame() {
 
 	}
 	else if (credits == true) {
+		// Credits text
 		DrawTextureEx(credits_screen, { 0, 0 }, 0.0f, ((float)screenWidth / credits_screen.width, (float)screenHeight / credits_screen.height), WHITE);
 		DrawText("PRESS [ENTER] TO CONTINUE!", (screenWidth - MeasureText("PRESS [ENTER] TO CONTINUE!", fontSize)) / 2, (screenHeight / 4) - 50, fontSize, GREEN);
 	}
 	else if (launchSequence == true) {
+		// Launch Sequence
 		DrawTextureEx(launch_background, { 0,0 }, 0.0f, ((float)screenWidth / credits_screen.width, (float)screenHeight / credits_screen.height), WHITE);
 		DrawTexturePro(player_sprite, sourceRec, player.GetRec(), { 0, 0 }, 0.0f, WHITE);
 
+		// Launch Sequence Enemy
 		if (player.GetY() <= 0) {
 			float scale2 = 4.0f;
 			sourceRec = { 0.0f, (float)(enemyboss.GetCurrentFrame() * 64), 96.0f, 64.0f };
@@ -258,6 +257,7 @@ void DrawGame() {
 	}
 	else if (inGame == true || gameOver == true) {
 
+		// Fade in animation
 		DrawTextureEx(level3_background, { 0, 0 }, 0.0f, ((float)screenWidth / credits_screen.width, (float)screenHeight / credits_screen.height), WHITE);
 
 		Color fadeColor = WHITE;
@@ -268,6 +268,7 @@ void DrawGame() {
 			fadeColor = { 255, 255, 255, (unsigned char)(alpha * 255) };
 		}
 
+		// Draw Background levels
 		switch (level) {
 		case LEVEL1:
 			DrawTextureEx(level1_background, { 0, 0 }, 0.0f, ((float)screenWidth / credits_screen.width, (float)screenHeight / credits_screen.height), fadeColor);
@@ -389,20 +390,24 @@ void DrawGame() {
 	}
 
 	if (gameOver == true) {
+		// Game Over text
 		DrawText("GAME OVER!", (screenWidth - MeasureText("GAME OVER!", fontSize)) / 2, (screenHeight / 2) - fontSize, fontSize, RED);
 		DrawText("PRESS [ENTER] TO PLAY AGAIN", (screenWidth - MeasureText("PRESS [ENTER] TO PLAY AGAIN", fontSize)) / 2, (screenHeight / 2) + fontSize, fontSize, RED);
 	}
 
 	if (victory == true) {
+		// Victory screen text
 		DrawTextureEx(win_screen, { 0, 0 }, 0.0f, ((float)screenWidth / credits_screen.width, (float)screenHeight / credits_screen.height), WHITE);
 		DrawText("PRESS [ENTER] TO PLAY AGAIN", (screenWidth - MeasureText("PRESS [ENTER] TO PLAY AGAIN", fontSize)) / 2, screenHeight - fontSize * 2, fontSize, RED);
 	}
 
 	if (pause == true) {
+		// Pause text
 		DrawText("GAME PAUSED!", (screenWidth - MeasureText("GAME PAUSED!", fontSize)) / 2, screenHeight - 137, fontSize, RED);
 	}
 
 	if (showCollisions == true) {
+		// Draw Entity Collisions
 		if (main_menu == true) {
 			DrawRectangleLines(
 				(int)lightning.GetRec().x,
