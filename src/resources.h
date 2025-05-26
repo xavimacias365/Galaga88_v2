@@ -17,6 +17,7 @@ extern Texture2D main_menu_logo_lightning;
 extern Texture2D credits_screen;
 
 extern Texture2D launch_background;
+extern Texture2D launch_sequence_enemy_sprite;
 
 extern Texture2D level1_background;
 extern Texture2D level3_background;
@@ -34,6 +35,8 @@ extern Texture2D baby_don1_sprite;
 extern Texture2D baby_don2_sprite;
 extern Texture2D baby_don3_sprite;
 extern Texture2D baby_don4_sprite;
+extern Texture2D mini_boss_galaga_sprite;
+extern Texture2D mini_boss_galaga_damaged_sprite;
 extern Texture2D enemy_explosion;
 
 extern Texture2D win_screen;
@@ -49,6 +52,7 @@ extern Sound main_menu_enemy_fly;
 extern Sound main_menu_start;
 
 extern Sound select;
+extern Sound launch_sequence_enemy;
 
 extern Sound fighter_shot;
 extern Sound fighter_killed;

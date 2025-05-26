@@ -40,11 +40,12 @@ bool showCollisions;
 
 int score;
 int highscore;
+int besthighscore;
 int lives;
 int activeEnemies;
-int currentMusic;
 int blink;
 float alpha;
+bool soundPlayed;
 
 const char* main_menu_text_start;
 
@@ -53,6 +54,7 @@ LightningState lstate = NUMBER;
 
 MainMenuEnemy enemy;
 MainMenuLightning lightning;
+LaunchSequenceEnemy enemyboss;
 vector<Zakko> zakkos;
 vector<Don> dons;
 vector<BabyDon> babydons;
@@ -60,6 +62,7 @@ vector<Goei> goeis;
 Player player;
 vector<PlayerShot> shot;
 vector<EnemyShot> eshot;
+vector<MiniBossGalaga> miniboss;
 vector<PlayerExplosion> explosion;
 vector<EnemyExplosion> eexplosion;
 
@@ -127,16 +130,18 @@ void InitGame() {
 	showCollisions = false;
 
 	score = 0;
+	besthighscore = 0;
 	lives = 1;
 	activeEnemies = 0;
-	currentMusic = 0;
 	blink = 0;
 	alpha = 0.0f;
+	soundPlayed = false;
 
 	main_menu_text_start = "TO START PRESS < ENTER >!";
 
 	enemy = MainMenuEnemy({ 0, 555, 64, 64 }, { 5, 0 }, WHITE, true, 0, 0, 0);
 	lightning = MainMenuLightning({ 20 + 220, 70 - 220, 64, 64 }, { 5, 5 }, WHITE, true, 0, 0, 0);
+	enemyboss = LaunchSequenceEnemy({ screenWidth / 2.0f - 48, screenHeight / 2.0f - 32, 96, 64 }, { 0, 0 }, WHITE, true, 0, 0, 0);
 
 	player = Player(true, { ((screenWidth - 50) / 2), screenHeight - (screenHeight / 10), 64, 64 }, { 5, 5 }, WHITE);
 
@@ -241,6 +246,13 @@ void DrawGame() {
 		DrawTextureEx(launch_background, { 0,0 }, 0.0f, ((float)screenWidth / credits_screen.width, (float)screenHeight / credits_screen.height), WHITE);
 		DrawTexturePro(player_sprite, sourceRec, player.GetRec(), { 0, 0 }, 0.0f, WHITE);
 
+		if (player.GetY() <= 0) {
+			float scale2 = 4.0f;
+			sourceRec = { 0.0f, (float)(enemyboss.GetCurrentFrame() * 64), 96.0f, 64.0f };
+			Rectangle destRec = { (float)(screenWidth / 2 - (96 * scale2) / 2), (float)(screenHeight / 2 - (64 * scale2) / 2), 96.0f * scale2, 64.0f * scale2 };
+			DrawTexturePro(launch_sequence_enemy_sprite, sourceRec, destRec, { 0, 0 }, 0.0f, WHITE);
+		}
+
 	}
 	else if (inGame == true || gameOver == true && level == LEVEL1) {
 
@@ -259,6 +271,7 @@ void DrawGame() {
 		}
 
 		// Draw Player
+		sourceRec = { 0.0f, 0.0f, 16.0f,  16.0f };
 		if (player.IsActive()) { DrawTexturePro(player_sprite, sourceRec, player.GetRec(), { 0, 0 }, 0.0f, WHITE); }
 
 		// Draw Zakko Enemies
@@ -299,6 +312,20 @@ void DrawGame() {
 				case 1: DrawTexturePro(baby_don2_sprite, sourceRec, bd.GetRec(), { 0, 0 }, 0.0f, WHITE); break;
 				case 2:	DrawTexturePro(baby_don3_sprite, sourceRec, bd.GetRec(), { 0, 0 }, 0.0f, WHITE); break;
 				case 3:	DrawTexturePro(baby_don4_sprite, sourceRec, bd.GetRec(), { 0, 0 }, 0.0f, WHITE); break;
+				}
+			}
+		}
+
+		// Draw MiniBoss Galaga Enemies
+		for (const MiniBossGalaga& mbg : miniboss) {
+			if (mbg.IsActive()) {
+				sourceRec = { 0.0f, mbg.GetCurrentFrame() * 16.0f, 16.0f, 16.0f };
+
+				if (mbg.GetEntityLives() == 2) {
+					DrawTexturePro(mini_boss_galaga_sprite, sourceRec, mbg.GetRec(), { 0, 0 }, 0.0f, WHITE);
+				}
+				else if (mbg.GetEntityLives() == 1) {
+					DrawTexturePro(mini_boss_galaga_damaged_sprite, sourceRec, mbg.GetRec(), { 0, 0 }, 0.0f, WHITE);
 				}
 			}
 		}
@@ -422,6 +449,16 @@ void DrawGame() {
 				);
 			}
 
+			for (const MiniBossGalaga& mbg : miniboss) {
+				DrawRectangleLines(
+					(int)mbg.GetRec().x,
+					(int)mbg.GetRec().y,
+					(int)mbg.GetRec().width,
+					(int)mbg.GetRec().height,
+					DARKBLUE
+				);
+			}
+
 			for (const Shot& s : shot) {
 				DrawRectangleLines(
 					(int)s.GetRec().x,
@@ -530,15 +567,22 @@ void LaunchSequence() {
 
 	UpdateMusicStream(main_menu_music);
 
-	if (player.GetY() > -screenHeight) {
+	if (player.GetY() >= -screenHeight) {
 		player.SetY(player.GetY() - player.GetSpeed().y);
 	}
+
+	if (player.GetY() <= 0 && !soundPlayed) {
+		PlaySound(launch_sequence_enemy);
+		soundPlayed = true;
+	}
 	
-	if (IsKeyPressed(KEY_ENTER) || player.GetY() <= -screenHeight  / 2) {
+	if (IsKeyPressed(KEY_ENTER) || player.GetY() <= -screenHeight / 2) {
 		launchSequence = false;
 		inGame = true;
 		player.SetY(screenHeight - (screenHeight / 5));
 	}
+
+	enemyboss.UpdateAnimation(2, 20);
 
 }
 
@@ -736,6 +780,45 @@ void InGame() {
 
 		//#-------#
 
+		// MiniBossGalaga Movement
+		for (MiniBossGalaga& mbg : miniboss) {
+			if (mbg.IsActive()) {
+				mbg.SetX(mbg.GetX() + mbg.GetSpeed().x);
+			}
+		}
+
+		// MiniBossGalaga Wall Collisions
+		float leftMostMBGCol = screenWidth;
+		float rightMostMBGCol = 0.0f;
+
+		// Find edges
+		for (MiniBossGalaga& mbg : miniboss) {
+			if (mbg.IsActive()) {
+				if (mbg.GetX() < leftMostMBGCol) { leftMostMBGCol = mbg.GetX(); }
+				if (mbg.GetX() + mbg.GetRec().width > rightMostMBGCol) { rightMostMBGCol = mbg.GetX() + mbg.GetRec().width; }
+			}
+		}
+
+		// Check collision with walls
+		hitLeftWall = (leftMostMBGCol <= 0);
+		hitRightWall = (rightMostMBGCol >= screenWidth - 16);
+		if (hitLeftWall || hitRightWall) {
+			for (MiniBossGalaga& mbg : miniboss) {
+				Vector2 speed = mbg.GetSpeed();
+				speed.x *= -1;
+				mbg.SetSpeed(speed);
+			}
+		}
+
+		// MiniBossGalaga Frame Animation
+		for (MiniBossGalaga& mbg : miniboss) {
+			if (mbg.IsActive()) {
+				mbg.UpdateAnimation(2, 20);
+			}
+		}
+
+		//#-------#
+
 		// Shot Behaviour
 		for (Shot& s : shot) {
 			if (s.IsActive()) {
@@ -759,9 +842,6 @@ void InGame() {
 					
 					// Score
 					score += 100;
-					if (score > highscore) {
-						highscore = score;
-					}
 				}
 			}
 		}
@@ -782,9 +862,6 @@ void InGame() {
 
 					// Score
 					score += 50;
-					if (score > highscore) {
-						highscore = score;
-					}
 				}
 			}
 		}
@@ -809,11 +886,7 @@ void InGame() {
 					int spawned = 0;
 					for (BabyDon& bd : babydons) {
 						if (!bd.IsActive()) {
-							Rectangle rec = {
-								origin.x + offsets[spawned].x,
-								origin.y + offsets[spawned].y,
-								32, 32
-							};
+							Rectangle rec = { origin.x + offsets[spawned].x, origin.y + offsets[spawned].y, 32, 32 };
 							bd = BabyDon(rec, commonSpeed, WHITE, true, 0, 0, 0, 0);
 							bd.SetVariant(parentVariant);
 							spawned++;
@@ -831,9 +904,6 @@ void InGame() {
 
 					// Score
 					score += 50;
-					if (score > highscore) {
-						highscore = score;
-					}
 				}
 			}
 		}
@@ -854,9 +924,32 @@ void InGame() {
 
 					// Score
 					score += 25;
-					if (score > highscore) {
-						highscore = score;
+				}
+			}
+		}
+
+		for (MiniBossGalaga& mbg : miniboss) {
+			if (mbg.IsActive() && s.IsActive() && CheckCollisionRecs(s.GetRec(), mbg.GetRec())) {
+				s.ChangeState(false);
+
+				if (mbg.GetEntityLives() > 1) {
+					mbg.SetEntityLives(mbg.GetEntityLives() - 1);
+					PlaySound(enemy_killed);
+				}
+				else {
+					mbg.ChangeState(false);
+					PlaySound(enemy_killed);
+
+					// Explosion
+					for (EnemyExplosion& ee : eexplosion) {
+						if (!ee.IsActive()) {
+							ee.Activate({ mbg.GetX(), mbg.GetY() }, mbg.GetRec().width, mbg.GetRec().height);
+							break;
+						}
 					}
+
+					// Score
+					score += 150;
 				}
 			}
 		}
@@ -920,8 +1013,18 @@ void InGame() {
 
 		//#-------#
 
+		// Score
+
+		if (score > highscore) {
+			highscore = score;
+		}
+
 		// Win Condition
-		if (CountEnemiesOnScreen() == 0) {
+		if (CountEnemiesOnScreen() == 0 && level == LEVEL1) {
+			level = LEVEL2;
+			level2();
+		}
+		else if (CountEnemiesOnScreen() == 0 && level == LEVEL2) {
 			inGame = false;
 			victory = true;
 			PlayMusicStream(victory_music);
@@ -946,6 +1049,11 @@ void GameOver() {
 		gameOver = false;
 		lives += 1;
 		main_menu = true;
+		soundPlayed = false;
+
+		if (score > highscore) {
+			highscore = besthighscore;
+		}
 
 		// Reset entities for next game
 		lightning.SetPos(20 + 220, 70 - 220);
@@ -980,6 +1088,11 @@ void Victory() {
 		victory = false;
 		lives += 1;
 		main_menu = true;
+		soundPlayed = false;
+
+		if (score > highscore) {
+			besthighscore = score;
+		}
 
 		// Reset entities for next game
 		lightning.SetPos(20 + 220, 70 - 220);
@@ -1008,9 +1121,11 @@ void Restart() {
 	goeis.clear();
 	dons.clear();
 	babydons.clear();
+	miniboss.clear();
 	shot.clear();
 	eshot.clear();
 
+	level = LEVEL1;
 	level1();
 }
 
@@ -1028,6 +1143,10 @@ void level1() {
 
 	for (int i = 0; i < 50; ++i) {
 		babydons.push_back(BabyDon({ -100, -100, 64, 64 }, { 1.0f, 7.5f }, WHITE, false, 0, 0, 0, 0));
+	}
+
+	for (int i = 0; i < 10; ++i) {
+		miniboss.push_back(MiniBossGalaga({ i * 64.0f, 200, 64, 64 }, { 1.0f, 0 }, WHITE, true, 0, 0, 0, 2));
 	}
 
 	for (int i = 0; i < 50; ++i) {
@@ -1049,18 +1168,20 @@ void level1() {
 
 void level2() {
 
-	player = Player(true, { ((screenWidth - 50) / 2), screenHeight - (screenHeight / 10), 64, 64 }, { 5, 5 }, WHITE);
-
 	for (int i = 0; i < 10; ++i) {
 		goeis.push_back(Goei({ i * 64.0f, 200, 64, 64 }, { 1.0f, 0 }, WHITE, true, 0, 0, 0));
 	}
 
 	for (int i = 0; i < 50; ++i) {
-		explosion.push_back(PlayerExplosion({ (player.GetRec().x + player.GetRec().width) / 2, player.GetRec().y, 12, 24 }, { 0, 0 }, WHITE, false, 0, 0));
+		shot.push_back(PlayerShot({ -100, -100, 12, 24 }, { 0, 10 }, WHITE, false));
 	}
 
 	for (int i = 0; i < 50; ++i) {
-		eexplosion.push_back(EnemyExplosion({ 0, 0, 0, 0 }, { 0, 0 }, WHITE, false, 0, 0));
+		explosion.push_back(PlayerExplosion({ -100, -100, 12, 24 }, { 0, 0 }, WHITE, false, 0, 0));
+	}
+
+	for (int i = 0; i < 50; ++i) {
+		eexplosion.push_back(EnemyExplosion({ -100, -100, 0, 0 }, { 0, 0 }, WHITE, false, 0, 0));
 	}
 
 }
@@ -1082,6 +1203,10 @@ int CountEnemiesOnScreen() {
 
 	for (BabyDon& bd : babydons) {
 		if (bd.IsActive()) activeEnemies++;
+	}
+
+	for (MiniBossGalaga& mbg : miniboss) {
+		if (mbg.IsActive()) activeEnemies++;
 	}
 
 	return activeEnemies;
@@ -1136,6 +1261,15 @@ void GameCheats() {
 		gameOver = true;
 		pause = false;
 		victory = false;
+		main_menu = false;
+		credits = false;
+		launchSequence = false;
+		inGame = false;
+	}
+	if (IsKeyPressed(KEY_SIX)) {
+		gameOver = false;
+		pause = false;
+		victory = true;
 		main_menu = false;
 		credits = false;
 		launchSequence = false;

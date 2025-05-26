@@ -14,6 +14,7 @@ Texture2D main_menu_logo_lightning;
 Texture2D credits_screen;
 
 Texture2D launch_background;
+Texture2D launch_sequence_enemy_sprite;
 
 Texture2D level1_background;
 Texture2D level3_background;
@@ -31,6 +32,8 @@ Texture2D baby_don1_sprite;
 Texture2D baby_don2_sprite;
 Texture2D baby_don3_sprite;
 Texture2D baby_don4_sprite;
+Texture2D mini_boss_galaga_sprite;
+Texture2D mini_boss_galaga_damaged_sprite;
 Texture2D enemy_explosion;
 
 Texture2D win_screen;
@@ -46,6 +49,7 @@ Sound main_menu_enemy_fly;
 Sound main_menu_start;
 
 Sound select;
+Sound launch_sequence_enemy;
 
 Sound fighter_shot;
 Sound fighter_killed;
@@ -75,6 +79,7 @@ void LoadGame() {
 	credits_screen = LoadTexture("resources/Textures/UI/credits.png");
 
 	launch_background = LoadTexture("resources/Textures/level-background/launch.png");
+	launch_sequence_enemy_sprite = LoadTexture("resources/Textures/UI/enemy_background.png");
 
 	level1_background = LoadTexture("resources/Textures/level-background/stage1.png");
 	level3_background = LoadTexture("resources/Textures/level-background/stage3.png");
@@ -92,6 +97,8 @@ void LoadGame() {
 	baby_don2_sprite = LoadTexture("resources/Textures/entities/enemies/don2_baby.png");
 	baby_don3_sprite = LoadTexture("resources/Textures/entities/enemies/don3_baby.png");
 	baby_don4_sprite = LoadTexture("resources/Textures/entities/enemies/don4_baby.png");
+	mini_boss_galaga_sprite = LoadTexture("resources/Textures/entities/enemies/mini_boss.png");
+	mini_boss_galaga_damaged_sprite = LoadTexture("resources/Textures/entities/enemies/mini_boss_damaged.png");
 	enemy_explosion = LoadTexture("resources/Textures/entities/player/explosion.png");
 
 	win_screen = LoadTexture("resources/Textures/UI/win_condition.png");
@@ -109,6 +116,7 @@ void LoadGame() {
 	main_menu_start = LoadSound("resources/audio/sfx/main_menu_start.wav");
 
 	select = LoadSound("resources/audio/sfx/select.wav");
+	launch_sequence_enemy = LoadSound("resources/audio/sfx/launch_sequence_enemy.ogg");
 
 	fighter_shot = LoadSound("resources/audio/sfx/fighter_shoot.wav");
 	fighter_killed = LoadSound("resources/audio/sfx/fighter_destroyed.wav");
@@ -140,6 +148,7 @@ void UnloadGame() {
 	UnloadTexture(credits_screen);
 
 	UnloadTexture(launch_background);
+	UnloadTexture(launch_sequence_enemy_sprite);
 
 	UnloadTexture(level1_background);
 	UnloadTexture(level3_background);
@@ -157,6 +166,8 @@ void UnloadGame() {
 	UnloadTexture(baby_don2_sprite);
 	UnloadTexture(baby_don3_sprite);
 	UnloadTexture(baby_don4_sprite);
+	UnloadTexture(mini_boss_galaga_sprite);
+	UnloadTexture(mini_boss_galaga_damaged_sprite);
 	UnloadTexture(enemy_explosion);
 
 	UnloadTexture(win_screen);
@@ -170,6 +181,7 @@ void UnloadGame() {
 	UnloadSound(main_menu_start);
 
 	UnloadSound(select);
+	UnloadSound(launch_sequence_enemy);
 
 	UnloadSound(fighter_shot);
 	UnloadSound(fighter_killed);

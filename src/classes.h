@@ -203,6 +203,12 @@ public:
 	MainMenuLightning(Rectangle rec, Vector2 speed, Color color, bool active, int shot, int frameCounter, int currentFrame) : Enemy(rec, speed, color, active, shot, frameCounter, currentFrame) {}
 };
 
+class LaunchSequenceEnemy : public Enemy {
+public:
+	LaunchSequenceEnemy() {}
+	LaunchSequenceEnemy(Rectangle rec, Vector2 speed, Color color, bool active, int shot, int frameCounter, int currentFrame) : Enemy(rec, speed, color, active, shot, frameCounter, currentFrame) {}
+};
+
 class Zakko : public Enemy {
 public:
 	Zakko() {}
@@ -242,10 +248,27 @@ public:
 	void SetVariant(int v) { variant = v; }
 };
 
+class MiniBossGalaga : public Enemy {
+private:
+	int lives = 0;
+	int variant = 0;
+
+public:
+	MiniBossGalaga() {}
+	MiniBossGalaga(Rectangle rec, Vector2 speed, Color color, bool active, int shot, int frameCounter, int currentFrame, int lives) : Enemy(rec, speed, color, active, shot, frameCounter, currentFrame), lives(lives) {}
+
+	int GetEntityLives() const { return lives; }
+	void SetEntityLives(int l) { lives = l; }
+
+};
+
 class BossGalaga : public Enemy {
+private:
+	int lives = 0;
+
 public:
 	BossGalaga() {}
-	BossGalaga(Rectangle rec, Vector2 speed, Color color, bool active, int shot, int frameCounter, int currentFrame) : Enemy(rec, speed, color, active, shot, frameCounter, currentFrame) {}
+	BossGalaga(Rectangle rec, Vector2 speed, Color color, bool active, int shot, int frameCounter, int currentFrame, int lives) : Enemy(rec, speed, color, active, shot, frameCounter, currentFrame), lives(lives) {}
 };
 
 // --- Enemy Manager ---
