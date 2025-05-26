@@ -292,12 +292,6 @@ void DrawGame() {
 			DrawTextureEx(stage_indicator, { (float)(screenWidth - stage_indicator.width * scale), (float)(screenHeight - stage_indicator.height * scale) }, 0.0f, scale, WHITE);
 			DrawTextureEx(stage_indicator, { (float)(screenWidth - stage_indicator.width * scale - ((stage_indicator.width * scale) / 2)), (float)(screenHeight - stage_indicator.height * scale) }, 0.0f, scale, WHITE);
 		}
-		else if (level == STAGE0)
-		{
-			DrawTextureEx(stage_indicator, { (float)(screenWidth - stage_indicator.width * scale), (float)(screenHeight - stage_indicator.height * scale) }, 0.0f, scale, WHITE);
-			DrawTextureEx(stage_indicator, { (float)(screenWidth - stage_indicator.width * scale - ((stage_indicator.width * scale) / 2)), (float)(screenHeight - stage_indicator.height * scale) }, 0.0f, scale, WHITE);
-			DrawTextureEx(stage_indicator, { (float)(screenWidth - stage_indicator.width * scale - ((stage_indicator.width * scale) / 4)), (float)(screenHeight - stage_indicator.height * scale) }, 0.0f, scale, WHITE);
-		}
 
 		// Draw Player
 		sourceRec = { 0.0f, 0.0f, 16.0f,  16.0f };
@@ -1357,7 +1351,7 @@ void level2() {
 	}
 
 	for (int i = 0; i < 1; ++i) {
-		bossqueen.push_back(BossGalaga({ i * 64.0f, 200, 300, 64 }, { 1.0f, 0 }, WHITE, true, 0, 0, 0, 16, 3, 1));
+		bossqueen.push_back(BossGalaga({ i * 64.0f, 200, 64, 64 }, { 1.0f, 0 }, WHITE, true, 0, 0, 0, 16, 3, 1));
 	}
 
 	for (int i = 0; i < 50; ++i) {
@@ -1396,6 +1390,10 @@ void Stage0() {
 
 	for (int i = 0; i < 10; ++i) {
 		goeis.push_back(Goei({ i * 64.0f, 400, 64, 64 }, { 1.0f, 0 }, WHITE, true, 0, 0, 0));
+	}
+
+	for (int i = 0; i < 1; ++i) {
+		bossqueen.push_back(BossGalaga({ i * 64.0f, 600, 64, 64 }, { 1.0f, 0 }, WHITE, true, 0, 0, 0, 16, 3, 1));
 	}
 
 	for (int i = 0; i < 50; ++i) {
