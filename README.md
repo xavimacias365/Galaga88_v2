@@ -29,7 +29,7 @@ Go to Testing level `8` (not numpad).
 
 ## 1 min Video Gameplay
 (Prototype): https://drive.google.com/file/d/191MitnHw2ltMA8Axo-wNF8AAjvqScqS4/view?usp=drive_link
-(Alpha):
+(Alpha): https://drive.google.com/file/d/1-Ek-mU94rZEsBygxtk6w83tGl0IsDgNV/view?usp=drive_link
 
 ### List of implemented features (Prototype)
 1. Player movement and collision.
