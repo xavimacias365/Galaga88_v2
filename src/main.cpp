@@ -936,7 +936,7 @@ void InGame() {
 				{
 					for (BabyDon& bd : babydons) {
 						if (!bd.IsActive()) {
-							Rectangle rec = { origin.x+64, origin.y, 32, 32 };
+							Rectangle rec = { origin.x+128, origin.y, 32, 32 };
 							bd = BabyDon(rec, commonSpeed, WHITE, true, 0, 0, 0, 0);
 							bd.SetVariant(parentVariant);
 							PlaySound(enemy_shot);
@@ -1357,7 +1357,11 @@ void level2() {
 	}
 
 	for (int i = 0; i < 1; ++i) {
-		bossqueen.push_back(BossGalaga({ i * 64.0f, 200, 300, 64 }, { 1.0f, 0 }, WHITE, true, 0, 0, 0, 16, 4, 1));
+		bossqueen.push_back(BossGalaga({ i * 64.0f, 200, 300, 64 }, { 1.0f, 0 }, WHITE, true, 0, 0, 0, 16, 3, 1));
+	}
+
+	for (int i = 0; i < 50; ++i) {
+		eshot.push_back(EnemyShot({ -100, -100, 12, 24 }, { 0, 10 }, WHITE, false, 0, 0));
 	}
 
 	for (int i = 0; i < 50; ++i) {
