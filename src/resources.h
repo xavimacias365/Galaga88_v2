@@ -20,6 +20,7 @@ extern Texture2D launch_background;
 extern Texture2D launch_sequence_enemy_sprite;
 
 extern Texture2D level1_background;
+extern Texture2D level2_background;
 extern Texture2D level3_background;
 extern Texture2D player_sprite;
 extern Texture2D shot_sprite;

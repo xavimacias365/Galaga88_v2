@@ -81,7 +81,9 @@ void InGame();
 void GameOver();
 void Victory();
 void Restart();
+void Clear();
 
+void Stage0();
 void level1();
 void level2();
 int CountEnemiesOnScreen();
@@ -254,11 +256,11 @@ void DrawGame() {
 		}
 
 	}
-	else if (inGame == true || gameOver == true && level == LEVEL1) {
+	else if (inGame == true || gameOver == true) {
 
 		DrawTextureEx(level3_background, { 0, 0 }, 0.0f, ((float)screenWidth / credits_screen.width, (float)screenHeight / credits_screen.height), WHITE);
 
-		if (alpha < 1.0f) {
+		if (alpha < 1.0f && level == LEVEL1) {
 			alpha += 0.01f;
 			if (alpha > 1.0f) alpha = 1.0f;
 
@@ -268,6 +270,27 @@ void DrawGame() {
 		else {
 			Color fadeColor = WHITE;
 			DrawTextureEx(level1_background, { 0, 0 }, 0.0f, ((float)screenWidth / credits_screen.width, (float)screenHeight / credits_screen.height), fadeColor);
+		}
+
+		if (level == LEVEL2 && alpha < 1.0f) {
+			alpha += 0.01f;
+			if (alpha > 1.0f) alpha = 1.0f;
+
+			Color fadeColor = { 255, 255, 255, (unsigned char)(alpha * 255) };
+			DrawTextureEx(level2_background, { 0, 0 }, 0.0f, ((float)screenWidth / credits_screen.width, (float)screenHeight / credits_screen.height), WHITE);
+		}
+		else if (level == LEVEL2) {
+			Color fadeColor = WHITE;
+			DrawTextureEx(level2_background, { 0, 0 }, 0.0f, ((float)screenWidth / credits_screen.width, (float)screenHeight / credits_screen.height), WHITE);
+		}
+
+		// Draw Stage indicator
+		if (level == LEVEL1) {
+			DrawTextureEx(stage_indicator, { (float)(screenWidth - stage_indicator.width * scale), (float)(screenHeight - stage_indicator.height * scale) }, 0.0f, scale, WHITE);
+		}
+		else if (level == LEVEL2) {
+			DrawTextureEx(stage_indicator, { (float)(screenWidth - stage_indicator.width * scale), (float)(screenHeight - stage_indicator.height * scale) }, 0.0f, scale, WHITE);
+			DrawTextureEx(stage_indicator, { (float)(screenWidth - stage_indicator.width * scale - ((stage_indicator.width * scale) / 2)), (float)(screenHeight - stage_indicator.height * scale) }, 0.0f, scale, WHITE);
 		}
 
 		// Draw Player
@@ -1129,6 +1152,16 @@ void Restart() {
 	level1();
 }
 
+void Clear() {
+	zakkos.clear();
+	goeis.clear();
+	dons.clear();
+	babydons.clear();
+	miniboss.clear();
+	shot.clear();
+	eshot.clear();
+}
+
 void level1() {
 
 	player = Player(true, { ((screenWidth - 50) / 2), screenHeight - (screenHeight / 10), 64, 64 }, { 5, 5 }, WHITE);
@@ -1169,7 +1202,7 @@ void level1() {
 void level2() {
 
 	for (int i = 0; i < 10; ++i) {
-		goeis.push_back(Goei({ i * 64.0f, 200, 64, 64 }, { 1.0f, 0 }, WHITE, true, 0, 0, 0));
+		goeis.push_back(Goei({ i * 64.0f, 400, 64, 64 }, { 1.0f, 0 }, WHITE, true, 0, 0, 0));
 	}
 
 	for (int i = 0; i < 50; ++i) {
@@ -1184,6 +1217,47 @@ void level2() {
 		eexplosion.push_back(EnemyExplosion({ -100, -100, 0, 0 }, { 0, 0 }, WHITE, false, 0, 0));
 	}
 
+}
+
+void Stage0() {
+
+	player = Player(true, { ((screenWidth - 50) / 2), screenHeight - (screenHeight / 10), 64, 64 }, { 5, 5 }, WHITE);
+
+	for (int i = 0; i < 10; ++i) {
+		zakkos.push_back(Zakko({ i * 64.0f, 100, 64, 64 }, { 1.0f, 0 }, WHITE, true, 0, 0, 0));
+	}
+
+	for (int i = 0; i < 10; ++i) {
+		dons.push_back(Don({ i * 64.0f, 300, 64, 64 }, { 1.0f, 0 }, WHITE, true, 0, 0, 0));
+	}
+
+	for (int i = 0; i < 50; ++i) {
+		babydons.push_back(BabyDon({ -100, -100, 64, 64 }, { 1.0f, 7.5f }, WHITE, false, 0, 0, 0, 0));
+	}
+
+	for (int i = 0; i < 10; ++i) {
+		miniboss.push_back(MiniBossGalaga({ i * 64.0f, 200, 64, 64 }, { 1.0f, 0 }, WHITE, true, 0, 0, 0, 2));
+	}
+
+	for (int i = 0; i < 10; ++i) {
+		goeis.push_back(Goei({ i * 64.0f, 400, 64, 64 }, { 1.0f, 0 }, WHITE, true, 0, 0, 0));
+	}
+
+	for (int i = 0; i < 50; ++i) {
+		shot.push_back(PlayerShot({ -100, -100, 12, 24 }, { 0, 10 }, WHITE, false));
+	}
+
+	for (int i = 0; i < 50; ++i) {
+		eshot.push_back(EnemyShot({ -100, -100, 12, 24 }, { 0, 10 }, WHITE, false, 0, 0));
+	}
+
+	for (int i = 0; i < 50; ++i) {
+		explosion.push_back(PlayerExplosion({ -100, -100, 12, 24 }, { 0, 0 }, WHITE, false, 0, 0));
+	}
+
+	for (int i = 0; i < 50; ++i) {
+		eexplosion.push_back(EnemyExplosion({ -100, -100, 0, 0 }, { 0, 0 }, WHITE, false, 0, 0));
+	}
 }
 
 int CountEnemiesOnScreen() {
@@ -1256,8 +1330,23 @@ void GameCheats() {
 		credits = false;
 		launchSequence = false;
 		inGame = true;
+		level == LEVEL1;
+		Clear();
+		level1();
 	}
 	if (IsKeyPressed(KEY_FIVE)) {
+		gameOver = false;
+		pause = false;
+		victory = false;
+		main_menu = false;
+		credits = false;
+		launchSequence = false;
+		inGame = true;
+		level == LEVEL2;
+		Clear();
+		level2();
+	}
+	if (IsKeyPressed(KEY_SIX)) {
 		gameOver = true;
 		pause = false;
 		victory = false;
@@ -1266,7 +1355,7 @@ void GameCheats() {
 		launchSequence = false;
 		inGame = false;
 	}
-	if (IsKeyPressed(KEY_SIX)) {
+	if (IsKeyPressed(KEY_SEVEN)) {
 		gameOver = false;
 		pause = false;
 		victory = true;
@@ -1274,6 +1363,18 @@ void GameCheats() {
 		credits = false;
 		launchSequence = false;
 		inGame = false;
+	}
+	if (IsKeyPressed(KEY_EIGHT)) {
+		gameOver = false;
+		pause = false;
+		victory = false;
+		main_menu = false;
+		credits = false;
+		launchSequence = false;
+		inGame = true;
+		level == LEVEL1;
+		Clear();
+		Stage0();
 	}
 }
 
