@@ -5,19 +5,19 @@ layout: default
 
 # About the Game
 
-Embark into a space adventure to return to the headquarters while insect like aliens try to attack you.
+Embark on a space adventure to return to headquarters while insect-like aliens try to kill you.
 
 
->This is a tribute to the original Galaga '88 developed by Namco. This game version is developed by Repeaters Studio, formed by Xavier Macias, Tomás Heurtley and Jonathan Rodríguez.
+>This game is a tribute to the original Galaga '88 developed by Namco. It was developed by Repeaters Studio, a group of students from CITM - UPC (Barcelona).
 >
 ><img src="https://github.com/user-attachments/assets/41094120-2cbe-4886-baf1-133d6e0db25d" width="200" height="200" /> 
 > RepeatersStudio: Galaga 88
 
-## Contribrutions
+## Contributions
 
-* [Xavier Macias](https://github.com/xavimacias365) - Designed and configurated the Github Page and Wiki, implemented game mechanics, enemies, screens, etc.; and worked on game assets (art).
-* [Tomás Heurtley](https://github.com/MrVulture33) - Implemented bosses and worked on game assets (sounds & music) and github wiki.
-* [Jonathan Rordríguez](https://github.com/JonyDProgramer) - Worked on github wiki and implemented game features on the prototype version.
+* [Xavier Macias](https://github.com/xavimacias365) - Configured the GitHub page, implemented game mechanics, enemies, screens, etc.; contributed to game assets (art), and worked on the GitHub Wiki.
+* [Tomás Heurtley](https://github.com/MrVulture33) - Implemented bosses, contributed to game assets (sounds and music), and worked on the GitHub Wiki.
+* [Jonathan Rordríguez](https://github.com/JonyDProgramer) - Worked on the GitHub Wiki and implemented game features in the prototype version.
 
 ## Gameplay video
 
