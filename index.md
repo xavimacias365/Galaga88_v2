@@ -3,7 +3,7 @@ title: Galaga '88
 layout: default
 ---
 
-![logo](https://github.com/user-attachments/assets/92d37f74-65ac-4300-ae18-4631fdd6596e)
+![logo](https://github.com/user-attachments/assets/5b7ef8e4-3fef-4ef4-aa4d-d1bca30f036b)
 
 Embark into a space adventure to return to the headquarters while insect like aliens try to attack you.
 
