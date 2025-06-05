@@ -3,7 +3,7 @@ title: Galaga '88
 layout: default
 ---
 
-![image](https://github.com/xavimacias365/Galaga88_v2/blob/main/resources/Textures/UI/logo.png)
+![logo](https://github.com/user-attachments/assets/92d37f74-65ac-4300-ae18-4631fdd6596e)
 
 Embark into a space adventure to return to the headquarters while insect like aliens try to attack you.
 
@@ -23,4 +23,4 @@ This is a tribute to the original Galaga '88 developed by Namco. This game versi
 # Gameplay video #
 
 # Latest Release (download) #
-https://github.com/xavimacias365/Galaga88_v2/releases/tag/v1.0
+[Click here](https://github.com/xavimacias365/Galaga88_v2/releases/tag/v1.0)
