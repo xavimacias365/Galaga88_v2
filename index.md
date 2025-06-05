@@ -24,4 +24,4 @@ Embark into a space adventure to return to the headquarters while insect like al
 [LinkVideo](https://github.com/xavimacias365/Galaga88_v2/releases/tag/v1.0)
 
 ### Latest Release
-![](https://github.com/xavimacias365/Galaga88_v2/blob/main/assets/download_button.png?raw=true)(https://github.com/xavimacias365/Galaga88_v2/releases/tag/v1.0)
+[![](https://github.com/xavimacias365/Galaga88_v2/blob/main/assets/download_button.png?raw=true)](https://github.com/xavimacias365/Galaga88_v2/releases/tag/v1.0)
