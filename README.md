@@ -1,58 +1,16 @@
+# GitHub Pages
 
-# Repeaters Studio - Galaga 88 (Alpha)
+<img src="https://octodex.github.com/images/Professortocat_v2.png" align="right" height="200px" />
 
-## Game Description
-Embark into a space adventure to return to the headquarters while insect like aliens tries to attack you.
-Tribute to the original game Galaga '88.
+Hey xavimacias365!
 
-## Developed by:
-	Xavi Macias (xavimacias365)
-    Tomás Heurtley (MrVulture33)
-    Jonathan Rordríguez (JonyDProgramer)
+Mona here. I'm done preparing your exercise. Hope you enjoy! 💚
 
-## How to Play the Game? - Controls
-Go between screens with `Enter`.
-Move with `←``→` or `A``D`.
-Shoot with `Space`.
-Pause the game with `P`.
-Quit the game with `ESC`.
+Remember, it's self-paced so feel free to take a break! ☕️
 
-## How to Play the Game? - Cheats && Testing mode
-Show entity collisions `O` (hitboxes).
-Add more lives `I`.
+[![](https://img.shields.io/badge/Go%20to%20Exercise-%E2%86%92-1f883d?style=for-the-badge&logo=github&labelColor=197935)](https://github.com/xavimacias365/Galaga88_v2/issues/1)
 
-Move between screens `1-7` (not numpad).
-Go to Testing level `8` (not numpad).
+---
 
-## Github Project link
-(Prototype): https://github.com/JonyDProgramer/Proyect1Ctim
-(Alpha): https://github.com/xavimacias365/Galaga88_v2
+&copy; 2025 GitHub &bull; [Code of Conduct](https://www.contributor-covenant.org/version/2/1/code_of_conduct/code_of_conduct.md) &bull; [MIT License](https://gh.io/mit)
 
-## 1 min Video Gameplay
-(Prototype): https://drive.google.com/file/d/191MitnHw2ltMA8Axo-wNF8AAjvqScqS4/view?usp=drive_link
-(Alpha): https://drive.google.com/file/d/1-Ek-mU94rZEsBygxtk6w83tGl0IsDgNV/view?usp=drive_link
-
-### List of implemented features (Prototype)
-1. Player movement and collision.
-2. Enemy behaviour (movement, shoot and collision). (zakko)
-3. Shoots collision (Player and Enemy).
-4. Win & Lose Condition.
-5. Score and High Score.
-6. Main Menu Screen.
-7. Credits Screen.
-8. Level Screen.
-9. Game Pause.
-10. Music and VFX.
-11. Stage Indicator.
-
-### List of implemented features (Alpha)
-1. New Main Menu Screen.
-2. Launch Sequence.
-3. Fade in level 1.
-4. New enemies: Goei, Don, Mini don, Mini Boss & Boss.
-5. Entity Explosions (death).
-6. Life counter.
-7. Level 2.
-8. [GOD MODE] Testing level. 
-9. [GOD MODE] Show hitboxes.
-10. [GOD MODE] Add more player lives.
