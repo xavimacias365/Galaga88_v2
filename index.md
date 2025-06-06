@@ -21,7 +21,12 @@ Embark on a space adventure to return to headquarters while insect-like aliens t
 
 ## Gameplay video
 
-[LinkVideo](https://github.com/xavimacias365/Galaga88_v2/releases/tag/v1.0)
+<iframe width="560" height="315" 
+src="https://drive.google.com/file/d/1mCIRk0gLn4kHQypIzDgF95t9xVq3GiTP/view?usp=sharing" 
+title="Galaga'88 gameplay" frameborder="0" 
+allowfullscreen></iframe>
+
+[LinkVideo](https://drive.google.com/file/d/1mCIRk0gLn4kHQypIzDgF95t9xVq3GiTP/view?usp=sharing)
 
 ### Latest Release
 [![](https://github.com/xavimacias365/Galaga88_v2/blob/main/assets/download_button.png?raw=true)](https://github.com/xavimacias365/Galaga88_v2/releases/tag/v1.0)
